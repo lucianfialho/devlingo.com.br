@@ -9,14 +9,18 @@ export async function POST(request, response) {
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  resend.contacts.create({
+  const { data } = await resend.contacts.create({
     email,
     unsubscribed: false,
     audienceId: "1fd01781-a7c8-4db7-a9c7-a7ef536d1946",
   });
 
   return NextResponse.json(
-    { ok: true, message: `Seu cadastro foi realizado com sucesso` },
+    {
+      ok: true,
+      message: `Seu cadastro foi realizado com sucesso`,
+      data,
+    },
     { status: 200 }
   );
 }
