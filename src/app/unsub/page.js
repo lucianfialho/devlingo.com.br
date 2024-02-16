@@ -8,7 +8,7 @@ export default function Home() {
           {"Você vai deixar saudades 😭"}
         </h1>
         <p className="mx-auto mb-8 max-w-2xl font-light text-gray-500 md:mb-12 sm:text-xl dark:text-gray-400">
-          Você foi removido da lista para futuros e-mails do {`</>lingo`}.
+          Você foi removido da lista para futuros e-mails do {`</lingo>`}.
           Espero que você volte um dia estaremos aqui de braços abertos. Vou
           deixar um link aqui caso voce queria voltar para a{" "}
           <Link className=" text-blue-600 underline" href={`/`}>
