@@ -16,13 +16,13 @@ import {
   
   import * as React from "react";
   
-  export const Welcome = ({
+  export const DevLingoNewsletter = ({
     userId,
   }) => {
     return (
-        <Tailwind>
+      
         <Html>
-          
+          <Tailwind>
           <Head />
           <Body className="bg-gray-100 my-auto mx-auto font-sans px-2">
             <Container className="my-[40px] mx-auto p-[20px] max-w-[600px]">
@@ -34,7 +34,7 @@ import {
                 <em className="text-[24px] mt-[6px]">{`🇧🇷 Seja bem-vindo`}</em>
               </Text>
               
-              <Section className="mt-[0px] bg-white px-10 py-5 hidden sm:block rounded-md rounded-tl-none	rounded-tr-none">
+              <Section className="mt-[0px] bg-white px-10 py-5 hidden rounded-md rounded-tl-none	rounded-tr-none">
               <Row>
                     <Column valign="top">
                       <strong className="text-[18px] text-gray-400">{`adjetivo`}</strong>
@@ -48,17 +48,7 @@ import {
                     </Column>
                   </Row>
               </Section>
-              <Section className="mt-[0px] bg-white px-6 sm:px-10 py-5 block sm:hidden rounded-md">
-              <Row>
-                    <Column valign="right">
-                    <strong className="text-[18px] text-gray-400">{`adjetivo`}</strong>
-                      <ol className="mt-0 pt-0">
-                      <li className="text-[16px] mb-4">bem acolhido à chegada; bem recebido.</li>
-                      <li className="text-[16px] mb-4">que chega ou chegou bem, a salvo.</li>
-                      </ol>
-                    </Column>
-                  </Row>
-              </Section>
+
               <Section className="mt-[32px] mb-[32px] bg-white px-10 py-5 rounded-md">
                 <Row>
                   <Column>
@@ -131,16 +121,16 @@ import {
               </Text>
             </Container>
           </Body>
-
+          </Tailwind>
         </Html>
-        </Tailwind>
+        
       
     );
   };
   
-  Welcome.PreviewProps = {
+  DevLingoNewsletter.PreviewProps = {
     userId: "1235455"
   };
   
-  export default Welcome;
+  export default DevLingoNewsletter;
   
