@@ -29,7 +29,7 @@ import {
               <Heading className=" font-normal text-center p-0 my-[30px] mx-0">
                 <Link className="text-black" href={"https://devlingo.com.br?utm_source=newsleter&utm_medium=email"}>{`</lingo>`}</Link>
               </Heading>
-              <Text className="text-[32px] text-center text-white text-center bg-gray-900 py-24 m-0 leading-[36px]">
+              <Text className="text-[32px] text-white text-center bg-gray-900 py-24 m-0 leading-[36px]">
                 {`🇺🇸 "Welcome"`} <br/>
                 <em className="text-[24px] mt-[6px]">{`🇧🇷 Seja bem-vindo`}</em>
               </Text>
