@@ -101,8 +101,6 @@ import {
                             Whatsapp
                           </Link>, <Link href={`https://twitter.com/intent/post?text=${encodeURI("Pessoal da uma olhada nessa newsletter que eu encontrei para ajudar a galera que está querendo aprender inglês, é só se inscrever")}&url=${encodeURI("https://devlingo.com.br")}`}>Twitter</Link> {" "} ou {" "} <Link href=""> Linkedin</Link>. Um pequeno gesto seu pode significar um grande passo para nós.
                         </li>
-                        <li className="mb-2">Interaja com anúncios: Sabemos que anúncios podem ser um incômodo, mas, se eventualmente aparecerem por aqui, clicar neles é uma maneira simples e eficaz de nos apoiar sem custo algum para você.</li>
-                        <li className="mb-2">Mencione-nos: Se encontrar uma oportunidade profissional por meio do {"</lingo>"}, mencione-nos ao se candidatar. Isso ajuda a fortalecer nossa rede e a mostrar o valor da nossa comunidade.</li>
                       </ul>
                       
                   </Column>
