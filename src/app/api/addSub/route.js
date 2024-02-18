@@ -10,23 +10,23 @@ export async function POST(request, response) {
 
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  // const { data } = await resend.contacts.create({
-  //   email,
-  //   unsubscribed: false,
-  //   audienceId: "1fd01781-a7c8-4db7-a9c7-a7ef536d1946",
-  // });
-  // console.log(emailContent);
+  const { data } = await resend.contacts.create({
+    email,
+    unsubscribed: false,
+    audienceId: "1fd01781-a7c8-4db7-a9c7-a7ef536d1946",
+  });
   await resend.emails.send({
     from: "No reply <noreply@devlingo.com.br>",
     to: email,
     subject: "Seja bem-vindo ao </lingo>",
-    react: Welcome(`123`),
+    react: Welcome(data.id),
   });
 
   return NextResponse.json(
     {
       ok: true,
       message: `Seu cadastro foi realizado com sucesso`,
+      data,
     },
     { status: 200 }
   );
