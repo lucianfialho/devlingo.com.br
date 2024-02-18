@@ -20,9 +20,9 @@ import {
     userId,
   }) => {
     return (
-      
+        <Tailwind>
         <Html>
-          <Tailwind>
+          
           <Head />
           <Body className="bg-gray-100 my-auto mx-auto font-sans px-2">
             <Container className="my-[40px] mx-auto p-[20px] max-w-[600px]">
@@ -131,9 +131,9 @@ import {
               </Text>
             </Container>
           </Body>
-          </Tailwind>
+
         </Html>
-        
+        </Tailwind>
       
     );
   };
