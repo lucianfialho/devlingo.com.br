@@ -26,6 +26,10 @@ function NewsletterForm() {
     }
 
     setSuccessMessage(data.message);
+    let dataLayer = window.dataLayer || [];
+    dataLayer.push({
+      event: "generate_lead",
+    });
     setErrorMessage("");
   };
 
