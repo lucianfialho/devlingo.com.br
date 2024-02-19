@@ -8,8 +8,9 @@ function NewsletterForm() {
   const [input, setInput] = useState("");
   const [successMessage, setSuccessMessage] = useState();
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     const email = input;
     const res = await fetch("/api/addSub", {
@@ -30,7 +31,9 @@ function NewsletterForm() {
     dataLayer.push({
       event: "generate_lead",
     });
+    setLoading(true);
     setErrorMessage("");
+    setInput("");
   };
 
   const dismissMessages = () => {
@@ -39,9 +42,9 @@ function NewsletterForm() {
   };
 
   return (
-    <div className="max-w-lg">
+    <div className="sm:max-w-lg w-full max-w-xs">
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center justify-center gap-x-4 ">
+        <div className="flex items-center justify-center gap-x-4 w-full">
           <label htmlFor="email-address" className="sr-only">
             Email address
           </label>
@@ -53,14 +56,28 @@ function NewsletterForm() {
             onChange={(e) => setInput(e.target.value)}
             autoComplete="email"
             required
-            className="min-w-72 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+            className="sm:min-w-72 w-3/4 flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
             placeholder="Adicione seu e-mail"
           />
           <button
+            disabled={loading}
             type="submit"
-            className="flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+            className=" flex-none rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
           >
-            Inscreva-se
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+              />
+            </svg>
           </button>
         </div>
       </form>
