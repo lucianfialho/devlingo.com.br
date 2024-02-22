@@ -1,6 +1,6 @@
 import { data } from "autoprefixer";
-import { db, customInitApp } from "./firebase";
-customInitApp();
+import { db } from "./firebase";
+
 export default async function getWords() {
   const querySnapshot = await db
     .collection("words")

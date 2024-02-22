@@ -7,13 +7,7 @@ const firebaseAdminConfig = {
   credential: cert(serviceAccoutnKey),
 };
 
-export function customInitApp() {
-  if (getApps().length <= 0) {
-    return initializeApp({
-      credential: firebaseAdminConfig.credential,
-    });
-  } else {
-    return getApps()[0];
-  }
-}
-export const db = getFirestore();
+let firebase_app =
+  getApps().length === 0 ? initializeApp(firebaseAdminConfig) : getApps()[0];
+
+export const db = getFirestore(firebase_app);
