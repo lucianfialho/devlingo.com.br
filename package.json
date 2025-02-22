@@ -13,16 +13,24 @@
     "@heroicons/react": "^2.1.1",
     "@react-email/components": "^0.0.14",
     "@react-email/tailwind": "^0.0.14",
+    "@react-spring/web": "^9.7.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "firebase-admin": "^12.0.0",
-    "next": "14.1.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "resend": "^3.2.0"
+    "framer-motion": "^12.4.7",
+    "lucide-react": "^0.475.0",
+    "next": "15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "redis": "^4.7.0",
+    "resend": "^3.2.0",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
-    "eslint-config-next": "14.1.0",
+    "eslint-config-next": "15.1.7",
     "postcss": "^8",
     "tailwindcss": "^3.3.0"
   }

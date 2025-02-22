@@ -1,38 +1,129 @@
-import NewsletterForm from "./components/NewsletterForm";
-import WordsList from "./components/WordList";
-import getWords from "@/lib/getWords";
+"use client";
 
-async function getData() {
-  const words = await getWords();
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import BlurText from "@/components/bits/BlurText";
+import SpotlightCard from "@/components/bits/SpotlightCard";
 
-  return words;
-}
+export default function Home() {
+  const [words, setWords] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function Home() {
-  const words = await getData();
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`/api/v1/terms/`)
+      const {terms} = await response.json()
+
+      setWords(terms)
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
+  
+  const wordOfTheDay = words.length > 0 ? words[0] : null;
+  const popularWords = words.slice(1, 6);
+  const categories = ["Frontend", "Backend", "DevOps", "Banco de Dados", "Cloud", "Segurança"];
+
   return (
-    <main className="bg-white dark:bg-gray-900 flex flex-col items-center justify-between min-h-screen">
-      <section className="mx-auto flex flex-col items-center justify-center max-w-screen-md sm:text-center min-h-screen sm:p-10">
-        <h1 className="mb-4 text-6xl tracking-tight font-extrabold text-gray-900 sm:text-7xl dark:text-white">
-          {"</lingo>"}
-        </h1>
-        <p className="sm:mx-auto mb-8 text-center max-w-xs sm:max-w-2xl font-light text-gray-500 md:mb-12 sm:text-xl dark:text-gray-400">
-          Aprenda uma palavra por dia, aumente seu vocabulário em inglês e
-          prepare-se para oportunidades de emprego fora do país.
-        </p>
-        <NewsletterForm />
+    <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-6 mt-24 bg-dark">
+      {/* Hero Section */}
+      <section className="text-center max-w-3xl py-20">
+        <BlurText
+          text="Termos técnicos em inglês são um desafio para você?"
+          delay={150}
+          animateBy="words"
+          direction="top"
+          className="text-4xl sm:text-6xl font-extrabold tracking-tight"
+        />
+        <motion.p 
+          className="mt-4 text-lg text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          Expanda seu vocabulário em inglês e prepare-se para oportunidades internacionais
+        </motion.p>
+        <motion.div 
+          className="mt-6 flex w-full max-w-md mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Input placeholder="Busque um termo..." className="text-lg h-12 w-full" />
+        </motion.div>
       </section>
-      <section className="relative top-[-120px]  bg-gray-50 w-full p-20 flex flex-col items-center">
-        <div className="max-w-screen-lg">
-          <h2 className="mb-4  pb-20 text-4xl tracking-tight font-extrabold text-gray-900 sm:text-4xl ">
-            Algumas palavras que já aprendemos 👇
-          </h2>
+
+      {/* Palavra do Dia */}
+      <section className="w-full max-w-3xl py-12">
+        {loading ? (
+          <p className="text-center text-lg text-muted-foreground">Carregando...</p>
+        ) : (
+          wordOfTheDay && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Link href={`/termos/${wordOfTheDay.name}`}>
+                <SpotlightCard className="custom-spotlight-card flex gap-6 items-center justify-center" spotlightColor="rgba(0, 229, 255, 0.2)">
+                  
+                  <span className="text-white text-base">Palavra do dia:</span>
+                  <h2 className="text-white text-4xl">{wordOfTheDay.name.replaceAll("-", " ")}</h2>
+                </SpotlightCard>
+              </Link>
+            </motion.div>
+          )
+        )}
+      </section>
+
+      {/* Lista de Termos Populares */}
+      <section className="w-full max-w-5xl py-12">
+        <h2 className="text-3xl font-bold mb-6">📈 Termos Populares</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {popularWords.map((word, index) => (
+            <motion.div
+              key={word.name}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card className="shadow-md hover:scale-105 transition-transform">
+                <CardContent className="text-center py-6 text-lg font-bold">
+                  <Link href={`/termos/${word.name}`} className="hover:underline">
+                    {word.name.replaceAll("-", " ")}
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
-        <WordsList words={words} />
       </section>
-      <footer className="text-center dark:text-gray-300 text-black p-8">
-        <p>© 2024 {`</lingo>`}. Todos os direitos são reservados.</p>
-      </footer>
+
+      {/* Categorias */}
+      <section className="w-full max-w-5xl py-12">
+        <h2 className="text-3xl font-bold mb-6">📂 Categorias</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {categories.map((category, index) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card className="shadow-md hover:scale-105 transition-transform">
+                <CardContent className="text-center py-6 text-lg font-bold">
+                  <Link href={`/categorias/${category.toLowerCase()}`} className="hover:underline">
+                    {category}
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
