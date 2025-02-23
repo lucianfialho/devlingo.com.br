@@ -25,8 +25,8 @@ export default function Home() {
   
   const wordOfTheDay = words.length > 0 ? words[0] : null;
 
-  const categories = ["Frontend", "Backend", "DevOps", "Banco de Dados", "Cloud", "Segurança"];
-
+  const categories = ["internet","hardware","software","tecnico","acronimo","bits-and-bytes","formato-de-arquivos"];
+  
   return (
     <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-6 mt-24 bg-dark">
       {/* Hero Section */}
@@ -108,7 +108,7 @@ export default function Home() {
               <Card className="shadow-md hover:scale-105 transition-transform">
                 <CardContent className="text-center py-6 text-lg font-bold">
                   <Link href={`/categorias/${category.toLowerCase()}`} className="hover:underline">
-                    {category}
+                    {category.replaceAll("-", " ")}
                   </Link>
                 </CardContent>
               </Card>
