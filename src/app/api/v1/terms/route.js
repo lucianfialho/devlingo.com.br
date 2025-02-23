@@ -1,6 +1,6 @@
 import redisClient from "@/lib/redisClient";
 import { NextResponse } from "next/server";
-
+export const maxDuration = 60
 export const GET = async (request) => {
   try {
     const { searchParams } = new URL(request.url);
