@@ -36,6 +36,17 @@ const markdownComponents = {
     ),
 };
 
+const slugData = {
+    "internet":"internet",
+    "hardware":"hardware",
+    "software":"software",
+    "technical":"tecnico",
+    "acronyms":"acronimo",
+    "bits-and-bytes":"bits_and_bytes",
+    "file_formats":"formato-de-arquivos",
+  }
+  
+
 const fetchData = async (slug) => {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/term/${slug}`);
@@ -44,11 +55,10 @@ const fetchData = async (slug) => {
     return data;
 }
 
-export default async function CategoryPage({ params }) {
+export default async function TermPage({ params }) {
     const { slug } = await params;
 
     const { term } = await fetchData(slug);
-
     const { category, content, codeExamples, relatedTerms } = term;
 
     return (
@@ -57,14 +67,14 @@ export default async function CategoryPage({ params }) {
             <Card className="max-w-3xl">
                 <CardHeader>
                     <h1 className="capitalize text-3xl">{slug.replace(/-/g, " ")}</h1>
-                    <CardDescription><Link href={`/categoria/${category}`}>{category}</Link></CardDescription>
+                    <CardDescription><Link href={`/categoria/${slugData[category]}`}>{slugData[category]}</Link></CardDescription>
                 </CardHeader>
                 <CardContent> 
                     <ReactMarkdown components={markdownComponents}>
                         {content}
                     </ReactMarkdown>
 
-                    {codeExamples.length > 0 && (
+                    {codeExamples?.length > 0 && (
                         <>
                             <h2>Exemplos de código em {slug.replace(/-/g, " ")}</h2>
                             {codeExamples.map((code, index) => (
@@ -81,7 +91,7 @@ export default async function CategoryPage({ params }) {
                                 {relatedTerms.map((relatedTerm, index) => (
                                     <Card key={index} className="shadow-md hover:scale-105 transition-transform">
                                         <CardContent className="text-center py-4 text-lg font-bold">
-                                            <Link href={`/termo/${relatedTerm.slug}`} className="hover:underline">
+                                            <Link href={`/termos/${relatedTerm.slug}`} className="hover:underline">
                                                 {relatedTerm.name}
                                             </Link>
                                         </CardContent>

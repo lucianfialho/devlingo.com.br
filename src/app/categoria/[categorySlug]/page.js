@@ -20,6 +20,7 @@ const fetchData = async (categorySlug) => {
     // Simulação de busca de termos por categoria (frontend)
     const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/category/${categorySlug}`);
     const  data = await response.json();
+
     if(!data.success) {
       return notFound()
     }

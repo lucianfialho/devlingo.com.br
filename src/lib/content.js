@@ -22,6 +22,10 @@ export async function generateContent(term) {
       - Introdução clara, mencionando a palavra-chave "${term}" já no primeiro parágrafo.
       - **Subtítulos (h2, h3) relevantes** distribuindo a palavra-chave ao longo do texto.
       - Não inclua exemplos de código no conteudo
+      - Utilize "\\n\\n" para realizar as quebras de linha. O texto precisa estar normalizado.\n\n
+      - O artigo deve ser escrito de forma natural e otimizada para leitura e indexação no Google.\n\n
+
+
 
     5. **codeExamples**: Uma lista de até 1 exemplos de código reais ilustrando o uso do termo em diferentes linguagens, cada um com:
       - "language": A linguagem de programação usada.

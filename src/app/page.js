@@ -46,14 +46,6 @@ export default function Home() {
         >
           Expanda seu vocabulário em inglês e prepare-se para oportunidades internacionais
         </motion.p>
-        <motion.div 
-          className="mt-6 flex w-full max-w-md mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Input placeholder="Busque um termo..." className="text-lg h-12 w-full" />
-        </motion.div>
       </section>
 
       {/* Palavra do Dia */}
