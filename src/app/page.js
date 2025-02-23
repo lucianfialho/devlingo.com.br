@@ -24,7 +24,7 @@ export default function Home() {
   }, [])
   
   const wordOfTheDay = words.length > 0 ? words[0] : null;
-  const popularWords = words.slice(1, 6);
+
   const categories = ["Frontend", "Backend", "DevOps", "Banco de Dados", "Cloud", "Segurança"];
 
   return (
@@ -83,7 +83,7 @@ export default function Home() {
       <section className="w-full max-w-5xl py-12">
         <h2 className="text-3xl font-bold mb-6">📈 Termos Populares</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {popularWords.map((word, index) => (
+          {words.map((word, index) => (
             <motion.div
               key={word.name}
               initial={{ opacity: 0, y: 10 }}
