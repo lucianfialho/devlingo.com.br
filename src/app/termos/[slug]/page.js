@@ -55,6 +55,25 @@ const fetchData = async (slug) => {
     return data;
 }
 
+
+export async function generateMetadata({ params }) {
+    const { slug } = await params;
+    const { term } = await fetchData(slug);
+
+    if (!term) return notFound();
+  
+    return {
+      title: `A definição de ${slug.replaceAll("-", " ")} explicada de forma clara e objetiva`,
+      description: `A definição de ${slug.replaceAll("-", " ")} explicada de forma clara e objetiva. Saiba o que é ${slug.replaceAll("-", " ")}, para que serve e como funciona.`,
+      alternates: {
+        canonical: `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
+      },
+     
+    };
+  }
+  
+
+
 export default async function TermPage({ params }) {
     const { slug } = await params;
 
