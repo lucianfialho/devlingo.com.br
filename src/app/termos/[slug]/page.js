@@ -48,8 +48,9 @@ const slugData = {
   
 
 const fetchData = async (slug) => {
-
+    console.log(`${process.env.NEXT_PUBLIC_URL}/api/v1/term/${slug}`)
     const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/term/${slug}`);
+
     const data = await response.json();
 
     return data;

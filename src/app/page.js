@@ -107,7 +107,7 @@ export default function Home() {
             >
               <Card className="shadow-md hover:scale-105 transition-transform">
                 <CardContent className="text-center py-6 text-lg font-bold">
-                  <Link href={`/categorias/${category.toLowerCase()}`} className="hover:underline">
+                  <Link href={`/categoria/${category.toLowerCase()}`} className="hover:underline">
                     {category.replaceAll("-", " ")}
                   </Link>
                 </CardContent>

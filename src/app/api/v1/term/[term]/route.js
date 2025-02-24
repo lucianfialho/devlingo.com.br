@@ -19,7 +19,7 @@ export const GET = async (req,{params}) => {
 
     const generatedContent = await generateContent(term);
     let termData = {};
-    
+    console.log(generatedContent)
     // Verifica se o conteúdo gerado é uma string JSON válida e parseia
     if (typeof generatedContent === 'string') {
       try {
