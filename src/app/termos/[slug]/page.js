@@ -1,3 +1,4 @@
+import JsonLd from "@/components/JsonLd";
 import {
     Card,
     CardContent,
@@ -7,6 +8,7 @@ import {
 
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import removeMarkdown from "markdown-to-text";
 
 const markdownComponents = {
     h1: ({ node, ...props }) => (
@@ -56,7 +58,6 @@ const fetchData = async (slug) => {
     return data;
 }
 
-
 export async function generateMetadata({ params }) {
     const { slug } = await params;
     const { term } = await fetchData(slug);
@@ -71,7 +72,7 @@ export async function generateMetadata({ params }) {
       },
      
     };
-  }
+}
   
 
 
@@ -80,9 +81,59 @@ export default async function TermPage({ params }) {
 
     const { term } = await fetchData(slug);
     const { category, content, codeExamples, relatedTerms } = term;
+    
+    const firstParagraph = content.split('\n')[2]
+    const withoutFirstParagraph = removeMarkdown(firstParagraph)
+    const withoutMark = removeMarkdown(content)
+
+    const jsonLdData = {
+      "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": term.title,
+        "description": withoutFirstParagraph,
+        "abstract": withoutFirstParagraph,
+        "text": withoutMark,
+        "author": {
+            "@type": "Organization",
+            "name": "Devlingo",
+            "url": "https://devlingo.com.br"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Devlingo",
+            "logo": "https://devlingo.com.br/logo.png"
+        },
+        "datePublished": "2025-02-25",
+        "copyrightYear": "2025",
+        "copyrightHolder": {
+            "@type": "Organization",
+            "name": "Devlingo"
+        },
+        "mainEntityOfPage": `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
+        "url": `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
+        "teaches": {
+            "@type": "DefinedTerm",
+            "url": `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
+            "name": term.slug,
+            "description": firstParagraph
+        },
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "everyone"
+        },
+        "genre": "Technology",
+        "inLanguage": "pt-BR",
+        "isFamilyFriendly": "True",
+        "keywords": term.title.toLowerCase().split(" ").join(", "),
+        "locationCreated": {
+            "@type": "Place",
+            "name": "Brasil"
+        }
+      };
 
     return (
         <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-6 mt-24 bg-dark">
+          <JsonLd data={jsonLdData} />
         {/* Hero Section */}
             <Card className="max-w-3xl">
                 <CardHeader>
