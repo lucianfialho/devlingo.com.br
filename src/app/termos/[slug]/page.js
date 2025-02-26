@@ -70,7 +70,9 @@ export async function generateMetadata({ params }) {
       alternates: {
         canonical: `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
       },
-     
+      openGraph: {
+        images: [`https://www.devlingo.com.br/api/og?term=${slug}`],
+      }
     };
 }
   
@@ -101,7 +103,6 @@ export default async function TermPage({ params }) {
         "publisher": {
             "@type": "Organization",
             "name": "Devlingo",
-            "logo": "https://devlingo.com.br/logo.png"
         },
         "datePublished": "2025-02-25",
         "copyrightYear": "2025",

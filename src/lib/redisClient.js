@@ -40,16 +40,5 @@ redisClient.on('end', async () => {
   }
 })();
 
-// Para Redis Serverless (ex: Upstash), mantém conexão ativa com um ping
-if (process.env.REDIS_URL.includes("upstash")) {
-  setInterval(async () => {
-    try {
-      await redisClient.ping();
-      console.log("🔄 Ping enviado para manter conexão ativa.");
-    } catch (err) {
-      console.error("❌ Erro ao manter conexão Redis ativa:", err);
-    }
-  }, 60000);
-}
 
 export default redisClient;
