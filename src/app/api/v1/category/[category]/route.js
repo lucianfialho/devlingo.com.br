@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 
 export const GET = async (request, {params}) => {
   const {category} = await params
-  const { searchParams } = new URL(request.url);
-  const limit = Number(searchParams.get("limit")) || 10;
+
   try {
     const categoryData = JSON.parse(await redisClient.get(`categories:${category}`))
     
