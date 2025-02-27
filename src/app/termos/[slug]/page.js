@@ -50,8 +50,16 @@ const slugData = {
   
 
 const fetchData = async (slug) => {
-    console.log(`${process.env.NEXT_PUBLIC_URL}/api/v1/term/${slug}`)
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/term/${slug}`);
+
+    const data = await response.json();
+
+    return data;
+}
+const fetchCategoryData = async (category) => {
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/category/${category}`);
 
     const data = await response.json();
 
@@ -82,11 +90,14 @@ export default async function TermPage({ params }) {
     const { slug } = await params;
 
     const { term } = await fetchData(slug);
-    const { category, content, codeExamples, relatedTerms } = term;
+    const { category, content, codeExamples } = term;
     
     const firstParagraph = content.split('\n')[2]
     const withoutFirstParagraph = removeMarkdown(firstParagraph)
     const withoutMark = removeMarkdown(content)
+
+    const {terms} = await fetchCategoryData(category)
+    const relatedTerms = terms
 
     const jsonLdData = {
       "@context": "https://schema.org",
@@ -131,7 +142,7 @@ export default async function TermPage({ params }) {
             "name": "Brasil"
         }
       };
-
+      
     return (
         <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-6 mt-24 bg-dark">
           <JsonLd data={jsonLdData} />
@@ -163,8 +174,8 @@ export default async function TermPage({ params }) {
                                 {relatedTerms.map((relatedTerm, index) => (
                                     <Card key={index} className="shadow-md hover:scale-105 transition-transform">
                                         <CardContent className="text-center py-4 text-lg font-bold">
-                                            <Link href={`/termos/${relatedTerm.slug}`} className="hover:underline">
-                                                {relatedTerm.name}
+                                            <Link href={`/termos/${relatedTerm}`} className="hover:underline">
+                                                {relatedTerm}
                                             </Link>
                                         </CardContent>
                                     </Card>
