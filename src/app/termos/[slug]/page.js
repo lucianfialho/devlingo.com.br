@@ -73,7 +73,7 @@ export async function generateMetadata({ params }) {
     if (!term) return notFound();
   
     return {
-      title: `A definição de ${slug.replaceAll("-", " ")} explicada de forma clara e objetiva`,
+      title: `Definição de ${slug.replaceAll("-", " ")}: O que é ${slug.replaceAll("-", " ")} para Devs?`,
       description: `A definição de ${slug.replaceAll("-", " ")} explicada de forma clara e objetiva. Saiba o que é ${slug.replaceAll("-", " ")}, para que serve e como funciona.`,
       alternates: {
         canonical: `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
@@ -149,7 +149,7 @@ export default async function TermPage({ params }) {
         {/* Hero Section */}
             <Card className="max-w-3xl">
                 <CardHeader>
-                    <h1 className="capitalize text-3xl">{slug.replace(/-/g, " ")}</h1>
+                    <h1 className="capitalize text-3xl">{`O que é ${slug.replace(/-/g, " ")} ?`}</h1>
                     <CardDescription><Link href={`/categoria/${slugData[category]}`}>{slugData[category]}</Link></CardDescription>
                 </CardHeader>
                 <CardContent> 
