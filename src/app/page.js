@@ -31,20 +31,22 @@ export default function Home() {
     <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-6 mt-24 bg-dark">
       {/* Hero Section */}
       <section className="text-center max-w-3xl py-20">
-        <BlurText
-          text="Termos técnicos em inglês são um desafio para você?"
-          delay={150}
-          animateBy="words"
-          direction="top"
-          className="text-4xl sm:text-6xl font-extrabold tracking-tight"
-        />
+        <h1> 
+          <BlurText
+            text="Dicionário Brasileiro de Termos Técnicos em Tecnologia"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight"
+          />
+        </h1>
         <motion.p 
           className="mt-4 text-lg text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          Expanda seu vocabulário em inglês e prepare-se para oportunidades internacionais
+          Explicações claras e objetivas de mais de 15.000 termos técnicos em português, para desenvolvedores e profissionais de tecnologia.
         </motion.p>
       </section>
 
