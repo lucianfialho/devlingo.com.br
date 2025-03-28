@@ -31,7 +31,7 @@ export default function Home() {
     <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-6 mt-24 bg-dark">
       {/* Hero Section */}
       <section className="text-center max-w-3xl py-20">
-        <h1> 
+        <h1 className="sr-only">Dicionário Brasileiro de Termos Técnicos em Tecnologia</h1> 
           <BlurText
             text="Dicionário Brasileiro de Termos Técnicos em Tecnologia"
             delay={150}
@@ -39,7 +39,6 @@ export default function Home() {
             direction="top"
             className="text-4xl sm:text-6xl font-extrabold tracking-tight"
           />
-        </h1>
         <motion.p 
           className="mt-4 text-lg text-muted-foreground"
           initial={{ opacity: 0 }}
