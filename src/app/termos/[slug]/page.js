@@ -226,6 +226,26 @@ const customMarkdownComponents = {
       </div>
     );
   },
+  table: ({ node, ...props }) => (
+    <div className="overflow-x-auto my-4">
+      <table className="table-auto border-collapse border border-gray-300 w-full" {...props} />
+    </div>
+  ),
+  thead: ({ node, ...props }) => (
+    <thead className="bg-gray-100" {...props} />
+  ),
+  tbody: ({ node, ...props }) => (
+    <tbody {...props} />
+  ),
+  tr: ({ node, ...props }) => (
+    <tr className="border-t border-gray-300" {...props} />
+  ),
+  th: ({ node, ...props }) => (
+    <th className="px-4 py-2 text-left font-semibold text-gray-700" {...props} />
+  ),
+  td: ({ node, ...props }) => (
+    <td className="px-4 py-2 text-gray-600" {...props} />
+  ),
 };
 
 const slugData = {
