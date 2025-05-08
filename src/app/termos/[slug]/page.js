@@ -7,6 +7,7 @@ import {
     CardHeader,
     CardFooter,
 } from "@/components/ui/card";
+import { notFound } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";

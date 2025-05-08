@@ -12,7 +12,7 @@ export const GET = async (request) => {
 
     while (true) {
       // O resultado do scan é um objeto com as propriedades "cursor" e "keys"
-      const scanResult = await redisClient.scan(cursor, { MATCH: "term:*", COUNT: limit });
+      const scanResult = await redisClient.scan(cursor, { MATCH: "terms:*", COUNT: limit });
 
       const { cursor: newCursor, keys: foundKeys } = scanResult;
       cursor = newCursor;
@@ -24,8 +24,13 @@ export const GET = async (request) => {
     const terms = [];
     for (const key of keys) {
       const termStr = await redisClient.get(key);
+      const termWithKey = {
+        ...JSON.parse(termStr),
+        name: key.split(":")[1],
+      }
+      
       if (termStr) {
-        terms.push(JSON.parse(termStr));
+        terms.push(termWithKey);
       }
     }
 
