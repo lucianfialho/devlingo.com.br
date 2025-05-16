@@ -14,7 +14,7 @@ export default function TermsPage() {
   const [search, setSearch] = useState("");
   const [totalTerms, setTotalTerms] = useState(0);
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchTerms = async () => {
       try {
         const response = await fetch(`/api/v1/terms?limit=100`);
