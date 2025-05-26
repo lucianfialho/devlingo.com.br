@@ -1,4 +1,3 @@
-
 import JsonLd from "@/components/JsonLd";
 import {
     Card,
@@ -22,9 +21,13 @@ const Breadcrumbs = ({ category, slug }) => {
     "hardware": "Hardware",
     "software": "Software",
     "tecnico": "Técnico",
+    "technical": "Técnico",
     "acronimo": "Acrônimos",
+    "acronyms": "Acrônimos",
     "bits_and_bytes": "Bits e Bytes",
+    "bits-and-bytes": "Bits e Bytes",
     "formato-de-arquivos": "Formatos de Arquivos",
+    "file_formats": "Formatos de Arquivos",
   };
   
   return (
@@ -61,17 +64,41 @@ const Breadcrumbs = ({ category, slug }) => {
 };
 
 // Componente para tabela de conteúdo
-const TableOfContents = ({ content }) => {
-  // Extrai os títulos H2 do conteúdo markdown
-  const headings = content.split('\n')
-    .filter(line => line.startsWith('## '))
-    .map(line => ({
-      id: line.replace('## ', '').toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-'),
-      text: line.replace('## ', '')
-    }));
+const TableOfContents = ({ content, isStructured, structuredContent, faq }) => {
+  const headings = [];
   
-  if (headings.length < 2) return null; // Não mostrar se tiver poucos headings
+  if (isStructured && structuredContent) {
+    // Para conteúdo estruturado
+    Object.keys(structuredContent).forEach(key => {
+      if (structuredContent[key].heading) {
+        headings.push({
+          id: structuredContent[key].heading.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-'),
+          text: structuredContent[key].heading
+        });
+      }
+    });
+  } else {
+    // Para conteúdo tradicional (formato texto)
+    content.split('\n')
+      .filter(line => line.startsWith('## '))
+      .forEach(line => {
+        headings.push({
+          id: line.replace('## ', '').toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-'),
+          text: line.replace('## ', '')
+        });
+      });
+  }
   
+  // Adicionar FAQ ao índice se existir
+  if (faq && faq.length > 0) {
+    headings.push({
+      id: 'perguntas-frequentes',
+      text: 'Perguntas Frequentes'
+    });
+  }
+  
+  if (headings.length < 2) return null;
+
   return (
     <nav className="toc bg-gray-50 p-4 rounded-lg my-4">
       <h3 className="text-lg font-semibold mb-2">Neste artigo:</h3>
@@ -92,11 +119,20 @@ const TableOfContents = ({ content }) => {
 };
 
 // Componente para detecção do nível técnico do termo
-const TechnicalLevel = ({ content }) => {
-  // Esta é uma lógica simples - em produção, você pode querer uma abordagem mais robusta
-  const contentLength = content.length;
+const TechnicalLevel = ({ content, isStructured, structuredContent }) => {
+  let contentToAnalyze = '';
+  
+  if (isStructured && structuredContent) {
+    contentToAnalyze = Object.values(structuredContent)
+      .map(section => section.content || '')
+      .join(' ');
+  } else {
+    contentToAnalyze = content;
+  }
+  
+  const contentLength = contentToAnalyze.length;
   const complexityWords = ['avançado', 'complexo', 'especializado', 'profissional'];
-  const hasComplexWords = complexityWords.some(word => content.toLowerCase().includes(word));
+  const hasComplexWords = complexityWords.some(word => contentToAnalyze.toLowerCase().includes(word));
   
   let level = "Básico";
   if (contentLength > 2000 || hasComplexWords) {
@@ -127,7 +163,6 @@ const HighlightedDefinition = ({ firstParagraph }) => {
   );
 };
 
-
 // Componente para exemplos de código com syntax highlighting
 const CodeExamples = ({ codeExamples, slug }) => {
   if (!codeExamples?.length) return null;
@@ -140,13 +175,51 @@ const CodeExamples = ({ codeExamples, slug }) => {
       <div className="space-y-4">
         {codeExamples.map((codeExample, index) => (
           <div key={index} className="bg-gray-900 rounded-lg overflow-x-auto">
+            <div className="flex items-center px-4 py-2 text-xs text-white">
+              <span className="text-sm font-semibold">{codeExample.language}</span>
+            </div>
             <pre className="language-javascript p-4 text-white">
               <code>{codeExample.code}</code>
             </pre>
+            {codeExample.description && (
+              <div className="p-2 bg-gray-800 text-gray-300 text-sm">
+                {codeExample.description}
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
+  );
+};
+
+// Componente para FAQs
+const FAQSection = ({ faq }) => {
+  if (!Array.isArray(faq) || faq.length === 0) return null;
+  
+  return (
+    <section className="w-full py-6">
+      <h2 id="perguntas-frequentes" className="text-2xl font-semibold mb-4">❓ Perguntas Frequentes</h2>
+      <div className="space-y-4">
+        {faq.map((item, index) => (
+          <details key={index} className="group border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
+            <summary className="cursor-pointer font-medium text-gray-900 list-none flex items-center justify-between">
+              <span className="flex-1">{item.question}</span>
+              <span className="ml-2 text-gray-500 group-open:rotate-180 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </summary>
+            <div className="mt-3 pt-3 border-t border-gray-300 text-gray-700 leading-relaxed">
+              <ReactMarkdown components={customMarkdownComponents}>
+                {item.answer}
+              </ReactMarkdown>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
   );
 };
 
@@ -161,14 +234,41 @@ const RelatedTerms = ({ relatedTerms }) => {
         {relatedTerms.map((relatedTerm, index) => (
           <Card key={index} className="shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="text-center py-3 px-2">
-              <Link href={`/termos/${relatedTerm}`} className="text-blue-600 hover:underline text-sm md:text-base">
-                {relatedTerm}
+              <Link href={`/termos/${typeof relatedTerm === 'string' ? relatedTerm : relatedTerm.slug || relatedTerm.name}`} className="text-blue-600 hover:underline text-sm md:text-base">
+                {typeof relatedTerm === 'string' ? relatedTerm : relatedTerm.name}
               </Link>
             </CardContent>
           </Card>
         ))}
       </div>
     </section>
+  );
+};
+
+// Componente para renderizar conteúdo estruturado
+const StructuredContent = ({ structuredContent }) => {
+  if (!structuredContent) return null;
+  
+  return (
+    <div className="prose prose-blue max-w-none">
+      {Object.keys(structuredContent).map((key, index) => {
+        const section = structuredContent[key];
+        const headingId = section.heading?.toLowerCase().replace(/[^\w\s]/g, '').replace(/\s+/g, '-');
+        
+        return (
+          <div key={index} className="mb-8">
+            {section.heading && (
+              <h2 id={headingId} className="text-2xl font-semibold mt-6 mb-3 pt-2 border-t border-gray-200">
+                {section.heading}
+              </h2>
+            )}
+            <ReactMarkdown components={customMarkdownComponents}>
+              {section.content}
+            </ReactMarkdown>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
@@ -254,8 +354,11 @@ const slugData = {
   "hardware": "hardware",
   "software": "software",
   "technical": "tecnico",
+  "tecnico": "tecnico",
   "acronyms": "acronimo",
+  "acronimo": "acronimo",
   "bits-and-bytes": "bits_and_bytes",
+  "bits_and_bytes": "bits_and_bytes",
   "file_formats": "formato-de-arquivos",
 };
 
@@ -279,7 +382,7 @@ export async function generateMetadata({ params }) {
   
   // Criação da meta description melhorada
   const cleanSlug = slug.replaceAll("-", " ");
-  const metaDescription = `Entenda o que é ${cleanSlug}, como funciona, principais características e exemplos práticos de uso. Explicação clara em português para desenvolvedores.`;
+  const metaDescription = term.metaDescription || `Entenda o que é ${cleanSlug}, como funciona, principais características e exemplos práticos de uso. Explicação clara em português para desenvolvedores.`;
 
   return {
     title: `${cleanSlug} - Definição e Como Funciona | DevLingo`,
@@ -305,21 +408,39 @@ export async function generateMetadata({ params }) {
 export default async function TermPage({ params }) {
   const { slug } = await params;
   const { term } = await fetchData(slug);
-  const { category, content, codeExamples } = term;
   
-  const paragraphs = content.split('\n');
-  const firstParagraph = removeMarkdown(paragraphs[2] || '');
-  const withoutMark = removeMarkdown(content);
+  if (!term) return notFound();
 
-  const { terms } = await fetchCategoryData(category);
-  const relatedTerms = terms;
+  // Verificar o formato do conteúdo (estruturado ou string)
+  const isStructuredContent = typeof term.content === 'object' && !Array.isArray(term.content);
+  const category = term.category;
+  const content = isStructuredContent ? '' : term.content;
+  const codeExamples = term.codeExamples;
+  const faq = term.faq; // Nova propriedade FAQ
+  
+  // Extrair o primeiro parágrafo para uso na descrição
+  let firstParagraph = '';
+  if (isStructuredContent) {
+    const firstSection = Object.values(term.content)[0];
+    firstParagraph = removeMarkdown(firstSection?.content || '');
+  } else {
+    const paragraphs = content.split('\n');
+    firstParagraph = removeMarkdown(paragraphs[2] || '');
+  }
+  
+  const withoutMark = isStructuredContent 
+    ? removeMarkdown(Object.values(term.content).map(item => item.content || '').join(' ')) 
+    : removeMarkdown(content);
 
-  // Schema.org aprimorado com DefinedTerm
+  const { terms: categoryTerms } = await fetchCategoryData(category);
+  const relatedTerms = term.relatedTerms || categoryTerms;
+
+  // Schema.org aprimorado com DefinedTerm e FAQPage
   const jsonLdData = [
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": term.title,
+      "headline": term.title || `O que é ${slug.replace(/-/g, " ")}?`,
       "description": firstParagraph,
       "abstract": firstParagraph,
       "text": withoutMark,
@@ -332,7 +453,7 @@ export default async function TermPage({ params }) {
         "@type": "Organization",
         "name": "Devlingo",
       },
-      "datePublished": "2025-02-25",
+      "datePublished": "2025-05-16",
       "copyrightYear": "2025",
       "copyrightHolder": {
         "@type": "Organization",
@@ -343,7 +464,7 @@ export default async function TermPage({ params }) {
       "teaches": {
         "@type": "DefinedTerm",
         "url": `${process.env.NEXT_PUBLIC_URL}/termos/${slug}`,
-        "name": term.slug,
+        "name": term.slug || slug,
         "description": firstParagraph
       },
       "audience": {
@@ -353,7 +474,7 @@ export default async function TermPage({ params }) {
       "genre": "Technology",
       "inLanguage": "pt-BR",
       "isFamilyFriendly": "True",
-      "keywords": term.title.toLowerCase().split(" ").join(", "),
+      "keywords": (term.title || slug.replace(/-/g, " ")).toLowerCase().split(" ").join(", "),
       "locationCreated": {
         "@type": "Place",
         "name": "Brasil"
@@ -371,6 +492,22 @@ export default async function TermPage({ params }) {
       "termCode": category
     }
   ];
+
+  // Adicionar Schema.org para FAQ se existir
+  if (faq && faq.length > 0) {
+    jsonLdData.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faq.map(item => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer
+        }
+      }))
+    });
+  }
       
   return (
     <main className="flex flex-col items-center min-h-screen bg-background text-foreground px-4 sm:px-6 mt-24 bg-dark">
@@ -384,13 +521,17 @@ export default async function TermPage({ params }) {
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
               <div>
-                <h1 className="capitalize text-3xl font-bold">{`O que é ${slug.replace(/-/g, " ")}?`}</h1>
+                <h1 className="capitalize text-3xl font-bold">{term.title || `O que é ${slug.replace(/-/g, " ")}?`}</h1>
                 <CardDescription className="flex items-center gap-2 mt-2">
                   <Link href={`/categoria/${slugData[category]}`} className="text-blue-600 hover:underline">
                     {category}
                   </Link>
                   <span className="text-gray-400">•</span>
-                  <TechnicalLevel content={content} />
+                  <TechnicalLevel 
+                    content={content} 
+                    isStructured={isStructuredContent} 
+                    structuredContent={term.content} 
+                  />
                 </CardDescription>
               </div>
             </div>
@@ -401,17 +542,29 @@ export default async function TermPage({ params }) {
             <HighlightedDefinition firstParagraph={firstParagraph} />
             
             {/* Tabela de conteúdo */}
-            <TableOfContents content={content} />
+            <TableOfContents 
+              content={content} 
+              isStructured={isStructuredContent} 
+              structuredContent={term.content}
+              faq={faq}
+            />
             
             {/* Conteúdo principal */}
-            <div className="prose prose-blue max-w-none">
-              <ReactMarkdown components={customMarkdownComponents}>
-                {content}
-              </ReactMarkdown>
-            </div>
+            {isStructuredContent ? (
+              <StructuredContent structuredContent={term.content} />
+            ) : (
+              <div className="prose prose-blue max-w-none">
+                <ReactMarkdown components={customMarkdownComponents}>
+                  {content}
+                </ReactMarkdown>
+              </div>
+            )}
             
             {/* Exemplos de código */}
             <CodeExamples codeExamples={codeExamples} slug={slug} />
+            
+            {/* FAQ Section */}
+            <FAQSection faq={faq} />
             
             {/* Termos relacionados */}
             <RelatedTerms relatedTerms={relatedTerms} />
