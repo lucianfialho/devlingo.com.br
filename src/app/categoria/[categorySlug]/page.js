@@ -25,7 +25,7 @@ const fetchData = async (categorySlug) => {
       return notFound()
     }
 
-    return data.categoryData
+    return data
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     return notFound()
