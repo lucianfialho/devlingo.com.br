@@ -13,6 +13,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import removeMarkdown from "markdown-to-text";
 import UseFulnessFeedback from "@/components/UseFulnessFeedback";
+import RelatedTerms from "@/components/RelatedTerms";
 
 // Componente para breadcrumbs
 const Breadcrumbs = ({ category, slug }) => {
@@ -223,27 +224,6 @@ const FAQSection = ({ faq }) => {
   );
 };
 
-// Componente para termos relacionados
-const RelatedTerms = ({ relatedTerms }) => {
-  if (!Array.isArray(relatedTerms) || relatedTerms.length === 0) return null;
-  
-  return (
-    <section className="w-full py-6">
-      <h2 id="termos-relacionados" className="text-2xl font-semibold mb-4">📂 Termos relacionados</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {relatedTerms.map((relatedTerm, index) => (
-          <Card key={index} className="shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="text-center py-3 px-2">
-              <Link href={`/termos/${typeof relatedTerm === 'string' ? relatedTerm : relatedTerm.slug || relatedTerm.name}`} className="text-blue-600 hover:underline text-sm md:text-base">
-                {typeof relatedTerm === 'string' ? relatedTerm : relatedTerm.name}
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
-  );
-};
 
 // Componente para renderizar conteúdo estruturado
 const StructuredContent = ({ structuredContent }) => {
@@ -546,7 +526,6 @@ export default async function TermPage({ params }) {
               content={content} 
               isStructured={isStructuredContent} 
               structuredContent={term.content}
-              faq={faq}
             />
             
             {/* Conteúdo principal */}
@@ -567,7 +546,7 @@ export default async function TermPage({ params }) {
             <FAQSection faq={faq} />
             
             {/* Termos relacionados */}
-            <RelatedTerms relatedTerms={relatedTerms} />
+            <RelatedTerms currentTerm={slug} />
           </CardContent>
           
           <CardFooter className="flex justify-center">

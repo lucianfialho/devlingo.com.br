@@ -3,99 +3,98 @@ import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.MARITACA_API_KEY, baseURL: "https://chat.maritaca.ai/api"});
 
 export async function generateContent(term) {
-  const prompt = `Gere um artigo otimizado para SEO sobre o termo técnico "${term}". O resultado deve ser um objeto JSON estruturado, contendo:
+  const prompt = `Crie um artigo técnico detalhado e aprofundado sobre "${term}" para um dicionário de termos técnicos em tecnologia. O conteúdo deve ser:
 
-  1. **title**: O título principal do artigo, contendo a palavra-chave "${term}" naturalmente.
+1. DETALHADO E APROFUNDADO - não superficial, com pelo menos 1500 palavras
+2. ORIGINAL - sem nenhum conteúdo copiado de outras fontes
+3. EDUCACIONAL - com explicações claras e didáticas
+4. ESTRUTURADO - com seções bem definidas e progressão lógica
+5. RICO EM VALOR - com exemplos práticos, casos de uso, e insights técnicos
+6. ATUAL - com informações atualizadas sobre o estado da arte
 
-  2. **metaDescription**: Uma meta descrição persuasiva e otimizada para SEO (150 a 160 caracteres), contendo a palavra-chave "${term}".
+O resultado deve ser um objeto JSON estruturado, contendo:
 
-  3. **category**: Escolha uma das seguintes categorias para classificar este termo:
-      - "internet"
-      - "hardware"
-      - "software"
-      - "technical"
-      - "acronyms"
-      - "bits_and_bytes"
-      - "file_formats"
+1. **title**: Título principal com a palavra-chave "${term}" naturalmente integrada.
 
-  4. **content**: O corpo do artigo estruturado para SEO, incluindo:
-      - Introdução clara, mencionando a palavra-chave "${term}" já no primeiro parágrafo.
-      - **Subtítulos (h2, h3) relevantes** distribuindo a palavra-chave ao longo do texto.
-      - Não inclua exemplos de código no conteudo
-      - Utilize "\\n\\n" para realizar as quebras de linha. O texto precisa estar normalizado.\n\n
-      - O artigo deve ser escrito de forma natural e otimizada para leitura e indexação no Google.\n\n
+2. **metaDescription**: Meta descrição persuasiva e otimizada para SEO (150-160 caracteres).
 
+3. **category**: Uma das seguintes categorias mais apropriada:
+   - "internet" (para termos relacionados à web, protocolos, serviços online)
+   - "hardware" (para componentes físicos, dispositivos, equipamentos)
+   - "software" (para programas, aplicativos, sistemas operacionais)
+   - "technical" (para conceitos técnicos gerais, arquitetura, princípios)
+   - "acronyms" (para siglas e abreviações técnicas)
+   - "bits_and_bytes" (para conceitos de dados, armazenamento, manipulação binária)
+   - "file_formats" (para formatos de arquivo e padrões de dados)
 
+4. **content**: Corpo do artigo estruturado e detalhado, incluindo:
+   - Introdução abrangente: definição clara e contextualização do termo
+   - Histórico e evolução: quando e como surgiu, como evoluiu
+   - Funcionamento detalhado: explicação técnica aprofundada
+   - Casos de uso: exemplos reais e práticos de aplicação
+   - Comparações: relação com tecnologias similares ou alternativas
+   - Estado atual: tendências recentes e relevância no mercado
+   - Futuro: possíveis evoluções ou direções
+   - Conclusão: síntese e importância no ecossistema técnico
+   
+   Cada seção deve ter cabeçalhos H2 e H3 apropriados, com quebras de linha marcadas com "\\n\\n".
+   
+   O conteúdo deve ser original, educacional e fornecer um valor real para desenvolvedores e profissionais de tecnologia.
 
-    5. **codeExamples**: Uma lista de até 1 exemplos de código reais ilustrando o uso do termo em diferentes linguagens, cada um com:
-      - "language": A linguagem de programação usada.
-      - "code": O código formatado corretamente.
-      - "description": Uma breve explicação.
+5. **codeExamples**: 2-3 exemplos de código reais e funcionais que ilustram o uso prático, cada um com:
+   - "language": Linguagem de programação apropriada
+   - "code": Código funcional, não apenas ilustrativo
+   - "description": Explicação detalhada do que o código faz e como funciona
 
-  6. **whyLearn**: Um texto explicando por que esse termo é relevante no mercado de tecnologia.
+6. **whyLearn**: Explicação convincente sobre a importância do termo no mercado de tecnologia atual.
 
-  7. **relatedTerms**: Uma lista de até 5 termos técnicos similares que podem ser confundidos ou usados junto com o termo, cada um com:
-      - "name": Nome do termo.
-      - "slug": Versão slug do termo.
+7. **relatedTerms**: 5-7 termos técnicos relacionados, com:
+   - "name": Nome do termo
+   - "slug": Versão slug do termo
+   - "description": Breve explicação da relação com o termo principal
 
-  **Formato de saída esperado é o JSON sem markdown (exemplo para o termo 'DNS')**:
+8. **faq**: 4-6 perguntas frequentes sobre o termo, cada uma com:
+   - "question": Pergunta relevante e comum
+   - "answer": Resposta detalhada e informativa
 
-  {
-    "title": "O que é DNS? Como Funciona o Sistema de Nomes de Domínio",
-    "metaDescription": "DNS é um sistema que traduz domínios para IPs, permitindo o funcionamento da web. Saiba como funciona e por que é essencial.",
-    "category": "internet",
-    "content": "# O que é DNS?
+9. **references**: 3-5 referências de alta qualidade (documentações oficiais, livros, artigos técnicos):
+   - "title": Título da referência
+   - "url": URL da fonte (se aplicável)
+   - "description": Breve descrição do conteúdo da referência
 
-O **DNS** (Sistema de Nomes de Domínio) é um serviço fundamental para o funcionamento da internet. Ele permite que os usuários acessem sites e serviços online usando nomes de domínio legíveis, como "www.exemplo.com", em vez de se lembrar de endereços IP numéricos, como "192.168.1.1". O DNS basicamente traduz os nomes de domínio em endereços IP, permitindo que o navegador de um usuário se conecte ao servidor correto para carregar uma página da web.
-
-## Como Funciona o DNS?
-
-Quando você digita um nome de domínio em seu navegador, como "www.google.com", o seu dispositivo precisa saber o endereço IP desse domínio. O processo de resolução de nomes de domínio é feito em várias etapas:
-
-1. **Consulta Local**: O computador verifica se o endereço IP correspondente ao nome já está armazenado em seu cache.
-2. **Consulta ao Servidor de Resolução**: Se não encontrado localmente, o computador envia uma solicitação a um servidor de DNS (geralmente fornecido pelo seu provedor de internet).
-3. **Busca Recursiva**: O servidor de DNS consulta outros servidores de DNS para encontrar a correspondência exata.
-4. **Resposta**: O endereço IP é retornado ao seu dispositivo, que então se conecta ao servidor web para carregar o conteúdo.
-
-## Tipos de Registros DNS
-
-Existem diferentes tipos de registros DNS, sendo os mais comuns:
-- **A**: Mapeia um nome de domínio para um endereço IPv4.
-- **AAAA**: Mapeia um nome de domínio para um endereço IPv6.
-- **MX**: Define os servidores de email para um domínio.
-- **CNAME**: Redireciona um domínio para outro nome de domínio.
-
-## Importância do DNS
-Sem o DNS, a navegação na internet seria extremamente difícil, pois todos teriam que usar endereços IP numéricos para acessar sites. O sistema de DNS facilita a internet moderna, tornando-a mais acessível e eficiente.
-",
-    "codeExamples": [
-      {
-        "language": "Bash",
-        "code": "nslookup google.com",
-        "description": "Comando para buscar informações de DNS de um domínio."
-      }
-    ],
-    "whyLearn": "Entender DNS é fundamental para administradores de redes e desenvolvedores web.",
-    "relatedTerms": [
-      { "name": "IP Address", "slug": "ip-address" },
-      { "name": "HTTP", "slug": "http" },
-      { "name": "CDN", "slug": "cdn" }
-    ]
-  }`;
+Forneça conteúdo técnico preciso, detalhado e valioso que seria escrito por um especialista no assunto. O conteúdo deve ser de alta qualidade para uma plataforma educacional respeitável.`;
 
   try {
     const response = await openai.chat.completions.create({
-      model: "sabiazinho-3",
+      model: "sabiazinho-3",  // Ou o modelo mais recente disponível
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
-      max_tokens: 2048
+      max_tokens: 4096  // Aumentado para gerar conteúdo mais longo
     });
-
 
     const formatedData = response.choices[0]?.message?.content.replace(/```json|```/g, "").trim();
     if (formatedData.startsWith("{") && formatedData.endsWith("}")) {
       try {
         const generatedContent = JSON.parse(formatedData);
+        
+        // Verificações de qualidade
+        if (!generatedContent.content || generatedContent.content.length < 1000) {
+          throw new Error("Conteúdo gerado muito curto ou vazio");
+        }
+        
+        if (!generatedContent.codeExamples || generatedContent.codeExamples.length < 1) {
+          // Adicionar um exemplo padrão se necessário
+          generatedContent.codeExamples = [{
+            language: "JavaScript",
+            code: "// Exemplo de uso de " + term + "\nconsole.log('Exemplo básico');\n// Este é apenas um placeholder",
+            description: "Exemplo básico de uso em JavaScript."
+          }];
+        }
+        
+        // Adicionar data de geração
+        generatedContent.generated_at = new Date().toISOString();
+        generatedContent.version = "2.0"; // Para acompanhar versões do conteúdo
+        
         return generatedContent;
       } catch (jsonError) {
         console.error("❌ Erro ao parsear JSON. Conteúdo recebido:", formatedData);
