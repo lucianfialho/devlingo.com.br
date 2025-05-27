@@ -1,6 +1,7 @@
 import { generateContent } from "@/lib/content";
 import redisClient from "@/lib/redisClient";
 import { NextResponse } from "next/server";
+export const maxDuration = 60
 
 export const GET = async (req,{params}) => {
   
