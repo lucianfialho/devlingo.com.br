@@ -35,8 +35,8 @@ const RelatedTerms = ({ currentTerm }) => {
             
             if (synonyms.length > 0) {
               terms = synonyms.map(item => ({
-                name: item.to_tag || item.from_tag,
-                slug: (item.to_tag || item.from_tag).toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                name: item.from_tag,
+                slug: (item.from_tag).toLowerCase().replace(/[^a-z0-9]/g, '-'),
                 count: item.applied_count || 0
               }));
               apiSource = 'synonyms';
@@ -221,11 +221,6 @@ const RelatedTerms = ({ currentTerm }) => {
               >
                 {relatedTerm.name}
               </Link>
-              {relatedTerm.count > 0 && (
-                <span className="text-xs text-gray-500 mt-1 block">
-                  {relatedTerm.count} usos
-                </span>
-              )}
             </CardContent>
           </Card>
         ))}
