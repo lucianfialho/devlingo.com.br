@@ -1,126 +1,83 @@
-// Helper function to fetch with retries and detailed logging
-
-// Helper function to fetch with retries
-async function fetchWithRetry(url, options, maxRetries = 3) {
-  console.log(`[Sitemap] Fetching from: ${url}`);
-  const startTime = Date.now();
-  
-  let lastError;
-  
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`[Sitemap] Attempt ${attempt}/${maxRetries}...`);
-      const response = await fetch(url, options);
-      const elapsed = Date.now() - startTime;
-      console.log(`[Sitemap] Received response in ${elapsed}ms with status: ${response.status}`);
-      
-      return response;
-    } catch (error) {
-      lastError = error;
-      const elapsed = Date.now() - startTime;
-      console.error(`[Sitemap] Attempt ${attempt} failed after ${elapsed}ms: ${error.message}`);
-      
-      // Don't wait on the last attempt
-      if (attempt < maxRetries) {
-        // Exponential backoff with jitter
-        const delay = Math.min(1000 * Math.pow(2, attempt - 1) + Math.random() * 1000, 5000);
-        console.log(`[Sitemap] Retrying in ${Math.round(delay)}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
-  }
-  
-  throw lastError;
-}
+import redisClient from "@/lib/redisClient";
 
 export default async function sitemap() {
-  // Obtenha todos os termos da sua API
-  let terms = [];
-  const apiUrl = `https://www.devlingo.com.br/api/v1/terms?limit=1000`;
+  console.log(`[Sitemap] Starting generation at ${new Date().toISOString()}`);
   
-  console.log(`[Sitemap] Starting generation. Current time: ${new Date().toISOString()}`);
+  // Get terms directly from Redis instead of API to avoid timeouts
+  let terms = [];
+  let comparisons = [];
   
   try {
-      console.log(`[Sitemap] Attempting to fetch terms from: ${apiUrl}`);
+    // Use Redis SCAN to get all term keys efficiently
+    let cursor = "0";
+    const termKeys = [];
+    
+    do {
+      const scanResult = await redisClient.scan(cursor, { 
+        MATCH: "terms:*", 
+        COUNT: 1000 
+      });
       
-      const fetchOptions = {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        },
-        // Set timeout to avoid hanging the build
-        signal: AbortSignal.timeout(30000) // 30 second timeout
-      };
-      
-      const termsResponse = await fetchWithRetry(apiUrl, fetchOptions, 3);
-
-      // Check if the response is ok (status code 200-299)
-      if (!termsResponse.ok) {
-        // Log the response status and statusText
-        console.error(`[Sitemap] API Error: ${termsResponse.status} ${termsResponse.statusText}`);
-        
-        // Check specifically for 504 timeout errors
-        if (termsResponse.status === 504) {
-          console.error(`[Sitemap] Detected Vercel function timeout (504)`);
-          
-          // Log Vercel-specific headers if they exist
-          const vercelError = termsResponse.headers.get('x-vercel-error');
-          const vercelId = termsResponse.headers.get('x-vercel-id');
-          
-          if (vercelError) {
-            console.error(`[Sitemap] Vercel error: ${vercelError}`);
-          }
-          
-          if (vercelId) {
-            console.error(`[Sitemap] Vercel request ID: ${vercelId}`);
-          }
-          
-          // Try to get text response for more details
+      cursor = scanResult.cursor;
+      termKeys.push(...scanResult.keys);
+    } while (cursor !== "0");
+    
+    console.log(`[Sitemap] Found ${termKeys.length} term keys in Redis`);
+    
+    // Get term data in batches to avoid memory issues
+    const batchSize = 100;
+    for (let i = 0; i < termKeys.length; i += batchSize) {
+      const batch = termKeys.slice(i, i + batchSize);
+      const batchTerms = await Promise.all(
+        batch.map(async (key) => {
           try {
-            const textResponse = await termsResponse.text();
-            console.error(`[Sitemap] Error response (truncated): ${textResponse.substring(0, 200)}`);
-          } catch (textError) {
-            console.error(`[Sitemap] Could not read error response: ${textError.message}`);
+            const termData = await redisClient.get(key);
+            if (termData) {
+              const term = JSON.parse(termData);
+              return {
+                ...term,
+                slug: key.replace("terms:", "")
+              };
+            }
+          } catch (e) {
+            console.error(`[Sitemap] Error parsing term ${key}: ${e.message}`);
           }
-        }
-        
-        // Log all response headers for debugging
-        console.error(`[Sitemap] Response headers: ${JSON.stringify(Object.fromEntries([...termsResponse.headers]))}`);
-        
-        // Continue with empty terms (fallback to just using static routes)
-      } else {
-        // Check content type to ensure it's JSON
-        const contentType = termsResponse.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          console.log(`[Sitemap] Response looks good. Content-Type: ${contentType}`);
-          const termsData = await termsResponse.json();
-          terms = termsData.terms || [];
-          console.log(`[Sitemap] Successfully fetched ${terms.length} terms for sitemap`);
-          // Terms fetched successfully
-        } else {
-          console.error(`[Sitemap] API returned non-JSON content: ${contentType}`);
-          // Get text response for logging
-          const textResponse = await termsResponse.text();
-          console.error(`[Sitemap] Response body (truncated): ${textResponse.substring(0, 200)}`);
-          
-          // Continue with empty terms (fallback to just using static routes)
-        }
-      }
-    } catch (error) {
-      console.error(`[Sitemap] Error fetching terms for sitemap: ${error.message}`);
-      console.error(`[Sitemap] Error stack: ${error.stack}`);
+          return null;
+        })
+      );
       
-      // Continue with empty terms (fallback to just using static routes)
+      terms.push(...batchTerms.filter(Boolean));
     }
+    
+    console.log(`[Sitemap] Successfully loaded ${terms.length} terms from Redis`);
+    
+    // Generate comparison combinations for terms with related terms
+    terms.forEach(term => {
+      if (term.relatedTerms && Array.isArray(term.relatedTerms)) {
+        term.relatedTerms.forEach(related => {
+          if (related.slug) {
+            comparisons.push({
+              slug1: term.slug,
+              slug2: related.slug
+            });
+          }
+        });
+      }
+    });
+    
+    console.log(`[Sitemap] Generated ${comparisons.length} comparison URLs`);
+    
+  } catch (error) {
+    console.error(`[Sitemap] Error loading terms from Redis: ${error.message}`);
+    // Continue with empty terms but log the error
+  }
 
-  // URLs estáticas
+  // Static pages
   const staticPages = [
     {
       url: 'https://www.devlingo.com.br',
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'daily',
       priority: 1,
     },
     {
@@ -131,16 +88,16 @@ export default async function sitemap() {
     },
   ];
 
-  // Páginas de lista alfabética
+  // Alphabet pages
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   const alphabetPages = alphabet.map(letter => ({
     url: `https://www.devlingo.com.br/lista/${letter}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
-    priority: 0.8,
+    priority: 0.7,
   }));
 
-  // Páginas de categorias
+  // Category pages
   const categories = [
     "internet", "hardware", "software", "tecnico", 
     "acronimo", "bits-and-bytes", "formato-de-arquivos"
@@ -153,56 +110,47 @@ export default async function sitemap() {
     priority: 0.7,
   }));
 
-  // Páginas de termos individuais
-  let termPages = [];
-  
-  // Check if terms is an array before mapping
-  if (Array.isArray(terms)) {
-    console.log(`[Sitemap] Processing ${terms.length} terms for sitemap`);
-    
-    // Safe mapping with error handling for each term
-    termPages = terms.map(term => {
-      try {
-        // Validate term object to prevent errors
-        if (!term || typeof term !== 'object') {
-          console.error(`[Sitemap] Invalid term object: ${JSON.stringify(term)}`);
-          return null;
-        }
-        
-        // Ensure term has a name and it's a valid string
-        if (!term.name || typeof term.name !== 'string' || term.name.trim() === '') {
-          console.error(`[Sitemap] Term missing valid name: ${JSON.stringify(term)}`);
-          return null;
-        }
-        
-        // Sanitize name for URL (basic sanitization)
-        const sanitizedName = term.name.trim();
-        
-        return {
-          url: `https://www.devlingo.com.br/termos/${sanitizedName}`,
-          lastModified: term.last_updated ? new Date(term.last_updated) : new Date(),
-          changeFrequency: 'monthly',
-          priority: 0.6,
-        };
-      } catch (termError) {
-        console.error(`[Sitemap] Error processing term: ${termError.message}`);
-        return null;
-      }
-    }).filter(Boolean); // Filter out null entries
-    
-    console.log(`[Sitemap] Generated ${termPages.length} valid term URLs from ${terms.length} terms`);
-  } else {
-    console.warn(`[Sitemap] Terms is not an array, skipping term pages. Type: ${typeof terms}`);
-  }
+  // Individual term pages
+  const termPages = terms.map(term => ({
+    url: `https://www.devlingo.com.br/termos/${term.slug}`,
+    lastModified: term.updatedAt ? new Date(term.updatedAt) : new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }));
 
-  // Combine todas as páginas
+  // NEW: Why Learn pages for each term
+  const whyLearnPages = terms.map(term => ({
+    url: `https://www.devlingo.com.br/por-que-aprender/${term.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.5,
+  }));
+
+  // NEW: Comparison pages (limit to avoid too many URLs initially)
+  const comparisonPages = comparisons.slice(0, 5000).map(comp => ({
+    url: `https://www.devlingo.com.br/compare/${comp.slug1}/vs/${comp.slug2}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.5,
+  }));
+
+  // Combine all pages
   const allPages = [
     ...staticPages,
     ...alphabetPages,
     ...categoryPages,
     ...termPages,
+    ...whyLearnPages,
+    ...comparisonPages,
   ];
   
-  console.log(`[Sitemap] Generated total of ${allPages.length} URLs for sitemap`);
+  console.log(`[Sitemap] Generated sitemap with ${allPages.length} URLs:`);
+  console.log(`  - Static: ${staticPages.length}`);
+  console.log(`  - Alphabet: ${alphabetPages.length}`);
+  console.log(`  - Categories: ${categoryPages.length}`);
+  console.log(`  - Terms: ${termPages.length}`);
+  console.log(`  - Why Learn: ${whyLearnPages.length}`);
+  console.log(`  - Comparisons: ${comparisonPages.length}`);
+  
   return allPages;
 }

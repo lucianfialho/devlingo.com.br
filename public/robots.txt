@@ -1,0 +1,38 @@
+# DevLingo.com.br Robots.txt
+# Permite acesso total aos bots de busca
+
+User-agent: *
+Allow: /
+Crawl-delay: 0
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Sitemap
+Sitemap: https://www.devlingo.com.br/sitemap.xml
+
+# Diretórios permitidos explicitamente
+Allow: /termos/
+Allow: /categoria/
+Allow: /lista/
+Allow: /compare/
+Allow: /por-que-aprender/
+Allow: /exemplos/
+Allow: /api/v1/term/
+Allow: /api/v1/public/
+
+# Cache de imagens OG
+Allow: /api/og
+
+# Bloquear rotas admin e internas
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /api/v1/enhance/
+Disallow: /api/v1/_cron/
