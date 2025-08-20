@@ -1,78 +1,13 @@
-import redisClient from "@/lib/redisClient";
-
+// Sitemap otimizado para evitar timeouts
 export default async function sitemap() {
   console.log(`[Sitemap] Starting generation at ${new Date().toISOString()}`);
   
-  // Get terms directly from Redis instead of API to avoid timeouts
-  let terms = [];
-  let comparisons = [];
+  // For build time, we'll use a hybrid approach:
+  // 1. Static pages are always included
+  // 2. Term pages will be fetched via API with pagination
+  // 3. New SEO routes will be generated based on a sample
   
-  try {
-    // Use Redis SCAN to get all term keys efficiently
-    let cursor = "0";
-    const termKeys = [];
-    
-    do {
-      const scanResult = await redisClient.scan(cursor, { 
-        MATCH: "terms:*", 
-        COUNT: 1000 
-      });
-      
-      cursor = scanResult.cursor;
-      termKeys.push(...scanResult.keys);
-    } while (cursor !== "0");
-    
-    console.log(`[Sitemap] Found ${termKeys.length} term keys in Redis`);
-    
-    // Get term data in batches to avoid memory issues
-    const batchSize = 100;
-    for (let i = 0; i < termKeys.length; i += batchSize) {
-      const batch = termKeys.slice(i, i + batchSize);
-      const batchTerms = await Promise.all(
-        batch.map(async (key) => {
-          try {
-            const termData = await redisClient.get(key);
-            if (termData) {
-              const term = JSON.parse(termData);
-              return {
-                ...term,
-                slug: key.replace("terms:", "")
-              };
-            }
-          } catch (e) {
-            console.error(`[Sitemap] Error parsing term ${key}: ${e.message}`);
-          }
-          return null;
-        })
-      );
-      
-      terms.push(...batchTerms.filter(Boolean));
-    }
-    
-    console.log(`[Sitemap] Successfully loaded ${terms.length} terms from Redis`);
-    
-    // Generate comparison combinations for terms with related terms
-    terms.forEach(term => {
-      if (term.relatedTerms && Array.isArray(term.relatedTerms)) {
-        term.relatedTerms.forEach(related => {
-          if (related.slug) {
-            comparisons.push({
-              slug1: term.slug,
-              slug2: related.slug
-            });
-          }
-        });
-      }
-    });
-    
-    console.log(`[Sitemap] Generated ${comparisons.length} comparison URLs`);
-    
-  } catch (error) {
-    console.error(`[Sitemap] Error loading terms from Redis: ${error.message}`);
-    // Continue with empty terms but log the error
-  }
-
-  // Static pages
+  // Static pages - always included
   const staticPages = [
     {
       url: 'https://www.devlingo.com.br',
@@ -110,28 +45,123 @@ export default async function sitemap() {
     priority: 0.7,
   }));
 
-  // Individual term pages
-  const termPages = terms.map(term => ({
-    url: `https://www.devlingo.com.br/termos/${term.slug}`,
-    lastModified: term.updatedAt ? new Date(term.updatedAt) : new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }));
+  // Try to fetch terms, but with a timeout and limit
+  let termPages = [];
+  let whyLearnPages = [];
+  let comparisonPages = [];
+  
+  try {
+    // Use a timeout promise to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 30000) // 30 second timeout
+    );
+    
+    const fetchTermsPromise = async () => {
+      // Try to fetch a limited number of terms for the sitemap
+      // We'll use the API but with a small limit to avoid timeout
+      const response = await fetch('https://www.devlingo.com.br/api/v1/terms?limit=100', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        // Use AbortSignal for additional timeout control
+        signal: AbortSignal.timeout(25000) // 25 second timeout
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return data.terms || [];
+      }
+      return [];
+    };
+    
+    const terms = await Promise.race([fetchTermsPromise(), timeoutPromise]);
+    
+    if (Array.isArray(terms) && terms.length > 0) {
+      console.log(`[Sitemap] Fetched ${terms.length} sample terms for sitemap`);
+      
+      // Generate URLs for the sample terms
+      termPages = terms.map(term => ({
+        url: `https://www.devlingo.com.br/termos/${term.name}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.6,
+      }));
+      
+      // Generate why-learn pages for sample terms
+      whyLearnPages = terms.map(term => ({
+        url: `https://www.devlingo.com.br/por-que-aprender/${term.name}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      }));
+      
+      // Generate a few comparison pages based on related terms
+      const comparisons = [];
+      terms.forEach(term => {
+        if (term.relatedTerms && Array.isArray(term.relatedTerms)) {
+          term.relatedTerms.slice(0, 2).forEach(related => {
+            if (related.slug) {
+              comparisons.push({
+                url: `https://www.devlingo.com.br/compare/${term.name}/vs/${related.slug}`,
+                lastModified: new Date(),
+                changeFrequency: 'monthly',
+                priority: 0.5,
+              });
+            }
+          });
+        }
+      });
+      comparisonPages = comparisons.slice(0, 50); // Limit comparisons
+    }
+    
+  } catch (error) {
+    console.error(`[Sitemap] Error fetching terms: ${error.message}`);
+    // Continue without term pages
+  }
 
-  // NEW: Why Learn pages for each term
-  const whyLearnPages = terms.map(term => ({
-    url: `https://www.devlingo.com.br/por-que-aprender/${term.slug}`,
+  // Important SEO pages to always include
+  const importantTerms = [
+    'api', 'rest', 'graphql', 'react', 'vue', 'angular', 'nodejs', 
+    'javascript', 'typescript', 'python', 'java', 'golang', 'rust',
+    'docker', 'kubernetes', 'aws', 'azure', 'gcp', 'devops', 'ci-cd',
+    'git', 'github', 'gitlab', 'mongodb', 'postgresql', 'mysql', 'redis',
+    'html', 'css', 'sass', 'webpack', 'vite', 'nextjs', 'gatsby',
+    'machine-learning', 'deep-learning', 'ai', 'data-science', 'big-data'
+  ];
+  
+  // Always include important terms even if API fails
+  const importantTermPages = importantTerms.map(slug => ({
+    url: `https://www.devlingo.com.br/termos/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }));
+  
+  const importantWhyLearnPages = importantTerms.map(slug => ({
+    url: `https://www.devlingo.com.br/por-que-aprender/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
-    priority: 0.5,
+    priority: 0.7,
   }));
-
-  // NEW: Comparison pages (limit to avoid too many URLs initially)
-  const comparisonPages = comparisons.slice(0, 5000).map(comp => ({
-    url: `https://www.devlingo.com.br/compare/${comp.slug1}/vs/${comp.slug2}`,
+  
+  // Some important comparisons
+  const importantComparisons = [
+    { from: 'rest', to: 'graphql' },
+    { from: 'react', to: 'vue' },
+    { from: 'react', to: 'angular' },
+    { from: 'nodejs', to: 'python' },
+    { from: 'docker', to: 'kubernetes' },
+    { from: 'aws', to: 'azure' },
+    { from: 'mongodb', to: 'postgresql' },
+    { from: 'javascript', to: 'typescript' },
+  ];
+  
+  const importantComparisonPages = importantComparisons.map(comp => ({
+    url: `https://www.devlingo.com.br/compare/${comp.from}/vs/${comp.to}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
-    priority: 0.5,
+    priority: 0.7,
   }));
 
   // Combine all pages
@@ -139,18 +169,20 @@ export default async function sitemap() {
     ...staticPages,
     ...alphabetPages,
     ...categoryPages,
+    ...importantTermPages,
+    ...importantWhyLearnPages,
+    ...importantComparisonPages,
     ...termPages,
     ...whyLearnPages,
     ...comparisonPages,
   ];
   
-  console.log(`[Sitemap] Generated sitemap with ${allPages.length} URLs:`);
-  console.log(`  - Static: ${staticPages.length}`);
-  console.log(`  - Alphabet: ${alphabetPages.length}`);
-  console.log(`  - Categories: ${categoryPages.length}`);
-  console.log(`  - Terms: ${termPages.length}`);
-  console.log(`  - Why Learn: ${whyLearnPages.length}`);
-  console.log(`  - Comparisons: ${comparisonPages.length}`);
+  // Remove duplicates based on URL
+  const uniquePages = Array.from(
+    new Map(allPages.map(page => [page.url, page])).values()
+  );
   
-  return allPages;
+  console.log(`[Sitemap] Generated ${uniquePages.length} unique URLs`);
+  
+  return uniquePages;
 }

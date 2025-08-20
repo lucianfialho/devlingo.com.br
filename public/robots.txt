@@ -15,8 +15,11 @@ User-agent: Bingbot
 Allow: /
 Crawl-delay: 0
 
-# Sitemap
+# Sitemap principal
 Sitemap: https://www.devlingo.com.br/sitemap.xml
+
+# Sitemap index (para futura expansão)
+Sitemap: https://www.devlingo.com.br/sitemap-index.xml
 
 # Diretórios permitidos explicitamente
 Allow: /termos/
