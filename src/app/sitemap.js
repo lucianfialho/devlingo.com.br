@@ -49,6 +49,7 @@ export default async function sitemap() {
   let termPages = [];
   let whyLearnPages = [];
   let comparisonPages = [];
+  let oQueEPages = [];  // Nova rota: "o que é"
   
   try {
     // Use a timeout promise to prevent hanging
@@ -94,6 +95,14 @@ export default async function sitemap() {
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.5,
+      }));
+
+      // Generate "o que é" pages (HIGH PRIORITY for definition intent)
+      oQueEPages = terms.map(term => ({
+        url: `https://www.devlingo.com.br/o-que-e/${term.name}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.8,  // Higher priority than regular term pages!
       }));
       
       // Generate a few comparison pages based on related terms
@@ -144,6 +153,14 @@ export default async function sitemap() {
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
+
+  // "O que é" pages for important terms (HIGHEST PRIORITY!)
+  const importantOQueEPages = importantTerms.map(slug => ({
+    url: `https://www.devlingo.com.br/o-que-e/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.9,  // Very high priority for definition intent
+  }));
   
   // Some important comparisons
   const importantComparisons = [
@@ -169,9 +186,11 @@ export default async function sitemap() {
     ...staticPages,
     ...alphabetPages,
     ...categoryPages,
+    ...importantOQueEPages,  // Add "o que é" pages first (high priority)
     ...importantTermPages,
     ...importantWhyLearnPages,
     ...importantComparisonPages,
+    ...oQueEPages,  // Sample "o que é" pages
     ...termPages,
     ...whyLearnPages,
     ...comparisonPages,

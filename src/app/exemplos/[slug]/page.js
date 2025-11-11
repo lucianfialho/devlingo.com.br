@@ -4,15 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import JsonLd from "@/components/JsonLd";
 import RelatedTerms from "@/components/RelatedTerms";
+import CodeBlock from "@/components/CodeBlock";
 import redisClient from "@/lib/redisClient";
-import { Code2, Terminal, FileCode, Lightbulb, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { Code2, Terminal, FileCode, Lightbulb } from "lucide-react";
 
 async function getTerm(slug) {
   try {
     const termData = await redisClient.get(`terms:${slug}`);
     if (!termData) return null;
-    
+
     return {
       ...JSON.parse(termData),
       slug: slug
@@ -21,38 +21,6 @@ async function getTerm(slug) {
     console.error("Error fetching term:", error);
     return null;
   }
-}
-
-// Client component for copy functionality
-function CodeBlock({ code, language }) {
-  "use client";
-  
-  const [copied, setCopied] = useState(false);
-  
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  
-  return (
-    <div className="relative group">
-      <pre className="bg-slate-900 text-slate-50 p-4 rounded-lg overflow-x-auto">
-        <code className={`language-${language}`}>{code}</code>
-      </pre>
-      <button
-        onClick={handleCopy}
-        className="absolute top-2 right-2 p-2 bg-slate-800 rounded hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition-opacity"
-        aria-label="Copy code"
-      >
-        {copied ? (
-          <Check className="w-4 h-4 text-green-400" />
-        ) : (
-          <Copy className="w-4 h-4 text-slate-400" />
-        )}
-      </button>
-    </div>
-  );
 }
 
 export async function generateMetadata({ params }) {
