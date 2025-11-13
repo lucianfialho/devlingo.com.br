@@ -14,6 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-br">
       <head>
+        {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -24,6 +25,13 @@ export default function RootLayout({ children }) {
     })(window,document,'script','dataLayer', "GTM-WTGBRMG2");
   `,
           }}
+        ></script>
+
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5795702444937299"
+          crossOrigin="anonymous"
         ></script>
       </head>
       <body className={inter.className}>

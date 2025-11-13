@@ -13,6 +13,7 @@ import ReactMarkdown from "react-markdown";
 import removeMarkdown from "markdown-to-text";
 import UseFulnessFeedback from "@/components/UseFulnessFeedback";
 import RelatedTerms from "@/components/RelatedTerms";
+import AdSenseAd from "@/components/AdSenseAd";
 
 // Componente para breadcrumbs
 const Breadcrumbs = ({ category, slug }) => {
@@ -433,8 +434,24 @@ export default async function OQueEPage({ params }) {
             {/* Quick Answer (Featured Snippet Optimized) */}
             <QuickAnswer firstParagraph={firstParagraph} slug={slug} />
 
+            {/* Ad #1: In-Article após Quick Answer */}
+            <AdSenseAd
+              adSlot="7280255067"
+              adFormat="fluid"
+              adLayout="in-article"
+              className="my-6"
+            />
+
             {/* Conteúdo de definição (só introdução) */}
             <DefinitionContent term={term} slug={slug} />
+
+            {/* Ad #2: In-Article antes do FAQ */}
+            <AdSenseAd
+              adSlot="3497633164"
+              adFormat="fluid"
+              adLayout="in-article"
+              className="my-8"
+            />
 
             {/* FAQ Section (Top 3) */}
             <FAQSection faq={faq} slug={slug} />
@@ -446,6 +463,13 @@ export default async function OQueEPage({ params }) {
               </h2>
               <RelatedTerms currentTerm={slug} />
             </div>
+
+            {/* Ad #3: Multiplex após Related Terms */}
+            <AdSenseAd
+              adSlot="8042672391"
+              adFormat="autorelaxed"
+              className="mt-8"
+            />
           </CardContent>
 
           <CardFooter className="flex justify-center border-t border-gray-200 pt-6">
