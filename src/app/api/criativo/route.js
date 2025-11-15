@@ -77,28 +77,29 @@ export async function GET(request) {
           backgroundColor: colors.bg,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
           alignItems: 'flex-start',
           height: '100%',
           width: '100%',
-          padding: size.width > 800 ? '60px' : '30px',
+          padding: size.width > 800 ? '40px' : '30px',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          position: 'relative'
+          position: 'relative',
+          gap: size.width > 800 ? '40px' : '30px'
         }}
       >
         {/* Header */}
-        <div style={{ fontSize: size.width > 800 ? '60px' : '40px' }}>
+        <div style={{ fontSize: size.width > 800 ? '50px' : '40px' }}>
           🔥
         </div>
 
         {/* Main content */}
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: size.width > 800 ? '30px' : '20px' }}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: size.width > 800 ? '20px' : '15px', flex: 1 }}>
           <div
             style={{
-              fontSize: size.width > 800 ? '64px' : size.width > 400 ? '36px' : '24px',
+              fontSize: size.width > 800 ? '56px' : size.width > 400 ? '32px' : '24px',
               fontWeight: '900',
               color: colors.headline,
-              lineHeight: 1.2
+              lineHeight: 1.1
             }}
           >
             {headline}
@@ -106,9 +107,9 @@ export async function GET(request) {
 
           <div
             style={{
-              fontSize: size.width > 800 ? '28px' : '18px',
+              fontSize: size.width > 800 ? '24px' : '16px',
               color: colors.copy,
-              lineHeight: 1.5
+              lineHeight: 1.4
             }}
           >
             {copy}
@@ -118,13 +119,14 @@ export async function GET(request) {
             style={{
               backgroundColor: colors.cta,
               color: colors.ctaText,
-              padding: size.width > 800 ? '20px 40px' : '12px 24px',
-              borderRadius: '12px',
-              fontSize: size.width > 800 ? '28px' : '18px',
+              padding: size.width > 800 ? '16px 32px' : '12px 24px',
+              borderRadius: '8px',
+              fontSize: size.width > 800 ? '22px' : '16px',
               fontWeight: '700',
               display: 'block',
               width: 'auto',
-              maxWidth: '400px'
+              maxWidth: '300px',
+              marginTop: '10px'
             }}
           >
             {cta}
@@ -134,7 +136,7 @@ export async function GET(request) {
         {/* Footer */}
         <div
           style={{
-            fontSize: size.width > 800 ? '20px' : '14px',
+            fontSize: size.width > 800 ? '18px' : '14px',
             color: colors.accent,
             fontWeight: '600'
           }}

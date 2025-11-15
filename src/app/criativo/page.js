@@ -71,7 +71,6 @@ export default function CriativoGenerator() {
   };
 
   const currentFormat = formatos[formato];
-  const scale = Math.min(600 / currentFormat.width, 400 / currentFormat.height);
 
   return (
     <main className="min-h-screen bg-background px-6 py-8 mt-20">
@@ -243,22 +242,11 @@ export default function CriativoGenerator() {
               </CardHeader>
               <CardContent>
                 <div className="bg-gray-100 p-4 rounded-lg flex items-center justify-center min-h-[400px]">
-                  <div
-                    style={{
-                      width: currentFormat.width * scale,
-                      height: currentFormat.height * scale,
-                      transform: `scale(${scale})`,
-                      transformOrigin: 'center center'
-                    }}
-                  >
-                    <iframe
-                      src={`/api/criativo?termo=${encodeURIComponent(termo)}&headline=${encodeURIComponent(headline)}&copy=${encodeURIComponent(copy)}&cta=${encodeURIComponent(cta)}&template=${template}&formato=${formato}&tema=${tema}&preview=true`}
-                      width={currentFormat.width}
-                      height={currentFormat.height}
-                      className="border-2 border-gray-300 rounded"
-                      title="Preview"
-                    />
-                  </div>
+                  <img
+                    src={`/api/criativo?termo=${encodeURIComponent(termo)}&headline=${encodeURIComponent(headline)}&copy=${encodeURIComponent(copy)}&cta=${encodeURIComponent(cta)}&formato=${formato}&tema=${tema}`}
+                    alt="Preview do criativo"
+                    className="border-2 border-gray-300 rounded shadow-lg max-w-full h-auto"
+                  />
                 </div>
               </CardContent>
             </Card>
