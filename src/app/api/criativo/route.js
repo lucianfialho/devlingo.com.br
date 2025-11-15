@@ -27,7 +27,7 @@ export async function GET(request) {
   // Temas de cores
   const temas = {
     dark: {
-      bg: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
+      bg: '#000000',
       headline: '#ffffff',
       copy: '#d1d5db',
       cta: '#3b82f6',
@@ -35,7 +35,7 @@ export async function GET(request) {
       accent: '#3b82f6'
     },
     gradient: {
-      bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      bg: '#667eea',
       headline: '#ffffff',
       copy: '#f3f4f6',
       cta: '#ffffff',
@@ -59,7 +59,7 @@ export async function GET(request) {
       accent: '#00ffff'
     },
     light: {
-      bg: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      bg: '#f5f7fa',
       headline: '#1f2937',
       copy: '#4b5563',
       cta: '#2563eb',
@@ -70,140 +70,76 @@ export async function GET(request) {
 
   const colors = temas[tema] || temas.dark;
 
-  // Bullets personalizados por termo
-  const bullets = [
-    '✓ Definição clara',
-    '✓ Exemplos práticos',
-    '✓ 100% em português'
-  ];
-
   return new ImageResponse(
     (
       <div
         style={{
-          width: '100%',
-          height: '100%',
+          backgroundColor: colors.bg,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: colors.bg,
+          alignItems: 'flex-start',
+          height: '100%',
+          width: '100%',
           padding: size.width > 800 ? '60px' : '30px',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          position: 'relative'
         }}
       >
-        {/* Header com emoji */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ fontSize: size.width > 800 ? '60px' : '40px' }}>🔥</div>
-          <div
-            style={{
-              fontSize: size.width > 800 ? '24px' : '16px',
-              color: colors.accent,
-              fontWeight: '600',
-              letterSpacing: '0.05em'
-            }}
-          >
-            DEVLINGO
-          </div>
+        {/* Header */}
+        <div style={{ fontSize: size.width > 800 ? '60px' : '40px' }}>
+          🔥
         </div>
 
-        {/* Conteúdo principal */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: size.width > 800 ? '30px' : '15px',
-            flex: 1,
-            justifyContent: 'center'
-          }}
-        >
-          {/* Headline */}
+        {/* Main content */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: size.width > 800 ? '30px' : '20px' }}>
           <div
             style={{
               fontSize: size.width > 800 ? '64px' : size.width > 400 ? '36px' : '24px',
               fontWeight: '900',
               color: colors.headline,
-              lineHeight: 1.2,
-              maxWidth: '90%'
+              lineHeight: 1.2
             }}
           >
             {headline}
           </div>
 
-          {/* Copy */}
-          {size.height > 400 && (
-            <div
-              style={{
-                fontSize: size.width > 800 ? '28px' : '18px',
-                color: colors.copy,
-                lineHeight: 1.5,
-                maxWidth: '85%'
-              }}
-            >
-              {copy}
-            </div>
-          )}
-
-          {/* Bullets */}
-          {size.height > 600 && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                marginTop: '20px'
-              }}
-            >
-              {bullets.map((bullet, i) => (
-                <div
-                  key={i}
-                  style={{
-                    fontSize: size.width > 800 ? '24px' : '16px',
-                    color: colors.copy,
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
-                >
-                  {bullet}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* CTA e URL */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: size.height > 600 ? '20px' : '10px'
-          }}
-        >
-          {/* Botão CTA */}
           <div
             style={{
-              display: 'inline-flex',
-              background: colors.cta,
+              fontSize: size.width > 800 ? '28px' : '18px',
+              color: colors.copy,
+              lineHeight: 1.5
+            }}
+          >
+            {copy}
+          </div>
+
+          <div
+            style={{
+              backgroundColor: colors.cta,
               color: colors.ctaText,
               padding: size.width > 800 ? '20px 40px' : '12px 24px',
               borderRadius: '12px',
               fontSize: size.width > 800 ? '28px' : '18px',
               fontWeight: '700',
-              alignSelf: 'flex-start'
+              display: 'block',
+              width: 'auto',
+              maxWidth: '400px'
             }}
           >
-            {cta} →
+            {cta}
           </div>
+        </div>
 
-          {/* URL */}
-          <div
-            style={{
-              fontSize: size.width > 800 ? '20px' : '14px',
-              color: colors.accent,
-              fontWeight: '600'
-            }}
-          >
-            devlingo.com.br/o-que-e/{termo.toLowerCase().replace(/\s+/g, '-')}
-          </div>
+        {/* Footer */}
+        <div
+          style={{
+            fontSize: size.width > 800 ? '20px' : '14px',
+            color: colors.accent,
+            fontWeight: '600'
+          }}
+        >
+          devlingo.com.br
         </div>
       </div>
     ),
