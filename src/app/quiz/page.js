@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import QuizQuestion from '@/components/QuizQuestion';
 import ProgressBar from '@/components/ProgressBar';
 import RefreshBanner from '@/components/RefreshBanner';
-import RewardAd from '@/components/RewardAd';
+import AdSenseRewardAd from '@/components/AdSenseRewardAd';
+import QuizPreloader from '@/components/QuizPreloader';
 import { selectQuestions, validateAnswer } from '@/lib/quizQuestions';
 import { Button } from '@/components/ui/button';
 
@@ -17,6 +18,7 @@ export default function QuizPage() {
   
   // Estados
   const [sessionId] = useState(() => `quiz-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  const [showPreloader, setShowPreloader] = useState(true);
   const [showInitialReward, setShowInitialReward] = useState(false);
   const [showFinalReward, setShowFinalReward] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
@@ -35,10 +37,15 @@ export default function QuizPage() {
     setQuestions(initialQuestions);
   }, []);
 
+  // Handler para quando preloader completar
+  const handlePreloaderComplete = () => {
+    setShowPreloader(false);
+  };
+
   // Carregar ad da sidebar quando página inicial for exibida
   useEffect(() => {
-    if (!quizStarted && typeof window !== 'undefined') {
-      // Pequeno delay para garantir que o DOM está pronto
+    if (!quizStarted && !showPreloader && typeof window !== 'undefined') {
+      // Delay para garantir que o DOM está pronto e preloader foi exibido
       const timer = setTimeout(() => {
         try {
           (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -49,7 +56,7 @@ export default function QuizPage() {
       
       return () => clearTimeout(timer);
     }
-  }, [quizStarted]);
+  }, [quizStarted, showPreloader]);
 
 
   
@@ -136,6 +143,11 @@ export default function QuizPage() {
   };
   
   if (!quizStarted) {
+    // Mostrar preloader primeiro
+    if (showPreloader) {
+      return <QuizPreloader onComplete={handlePreloaderComplete} minDisplayTime={2500} />;
+    }
+    
     return (
       <>
         {/* Layout com duas colunas: conteúdo à esquerda, anúncio à direita */}
@@ -284,12 +296,14 @@ export default function QuizPage() {
           </div>
         </div>
 
-        <RewardAd
+        <AdSenseRewardAd
           show={showInitialReward}
-          onComplete={handleInitialRewardComplete}
+          onRewardGranted={handleInitialRewardComplete}
           adSlot="3390069372"
           minWatchTime={5}
-          rewardMessage="Vamos começar o quiz!"
+          buttonText="ASSISTIR ANÚNCIO"
+          rewardMessage="Assista ao anúncio para começar o quiz"
+          icon="🎯"
         />
         
         {!showInitialReward && questions.length === 0 && (
@@ -319,12 +333,14 @@ export default function QuizPage() {
     <div className="fixed inset-0 bg-white overflow-hidden">
 
       {/* Reward Ad Final */}
-      <RewardAd
+      <AdSenseRewardAd
         show={showFinalReward}
-        onComplete={handleFinalRewardComplete}
+        onRewardGranted={handleFinalRewardComplete}
         adSlot="6473621613"
         minWatchTime={5}
-        rewardMessage="Veja seus resultados e vagas recomendadas!"
+        buttonText="VER RESULTADOS"
+        rewardMessage="Assista ao anúncio para ver seus resultados"
+        icon="🏆"
       />
       
       {/* Container Principal - Fullscreen com scroll */}
