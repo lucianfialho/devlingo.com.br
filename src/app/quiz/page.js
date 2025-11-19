@@ -17,7 +17,7 @@ export default function QuizPage() {
   
   // Estados
   const [sessionId] = useState(() => `quiz-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
-  const [showInitialReward, setShowInitialReward] = useState(true);
+  const [showInitialReward, setShowInitialReward] = useState(false);
   const [showFinalReward, setShowFinalReward] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [questions, setQuestions] = useState([]);
@@ -34,6 +34,23 @@ export default function QuizPage() {
     const initialQuestions = selectQuestions([], 5);
     setQuestions(initialQuestions);
   }, []);
+
+  // Carregar ad da sidebar quando página inicial for exibida
+  useEffect(() => {
+    if (!quizStarted && typeof window !== 'undefined') {
+      // Pequeno delay para garantir que o DOM está pronto
+      const timer = setTimeout(() => {
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (error) {
+          console.error('Error loading sidebar ad:', error);
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [quizStarted]);
+
 
   
   const currentQuestion = questions[currentQuestionIndex];
@@ -121,6 +138,152 @@ export default function QuizPage() {
   if (!quizStarted) {
     return (
       <>
+        {/* Layout com duas colunas: conteúdo à esquerda, anúncio à direita */}
+        <div className="min-h-screen bg-gradient-to-b from-[#58CC02] to-[#47A302] p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6 items-start">
+              
+              {/* Coluna Esquerda - Conteúdo Editorial */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-white rounded-3xl p-6 md:p-10 shadow-2xl"
+              >
+                {/* Ícone e Título */}
+                <div className="text-center mb-6">
+                  <div className="text-5xl mb-3">🎯</div>
+                  <h1 className="text-3xl md:text-4xl font-bold text-[#3C3C3C] mb-3">
+                    Descubra Seu Perfil de Desenvolvedor
+                  </h1>
+                  <p className="text-lg text-[#777777] mb-3">
+                    Responda ao quiz e encontre as vagas ideais para suas habilidades
+                  </p>
+                  
+                  {/* Informação sobre mercado e salários */}
+                  <div className="inline-block bg-[#E8F5E9] rounded-full px-5 py-2 border-2 border-[#58CC02]">
+                    <p className="text-sm text-[#3C3C3C]">
+                      <span className="font-bold">📊 Mercado aquecido:</span> Salários de R$ 4.000 a R$ 15.000+
+                    </p>
+                  </div>
+                </div>
+
+                {/* Estatísticas do mercado */}
+                <div className="bg-gradient-to-r from-[#1CB0F6]/10 to-[#58CC02]/10 rounded-2xl p-5 mb-6 border-2 border-[#E5E5E5]">
+                  <h3 className="font-bold text-[#3C3C3C] mb-3 text-center">💰 Faixas Salariais por Nível</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center">
+                      <div className="text-xl mb-1">🌱</div>
+                      <p className="font-bold text-[#3C3C3C] text-sm">Júnior</p>
+                      <p className="text-[#58CC02] font-bold text-sm">R$ 4-7k</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl mb-1">🚀</div>
+                      <p className="font-bold text-[#3C3C3C] text-sm">Pleno</p>
+                      <p className="text-[#1CB0F6] font-bold text-sm">R$ 7-12k</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl mb-1">⭐</div>
+                      <p className="font-bold text-[#3C3C3C] text-sm">Sênior</p>
+                      <p className="text-[#FF9600] font-bold text-sm">R$ 12k+</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#777777] text-center mt-3">
+                    *Valores médios baseados em vagas publicadas em novembro de 2024
+                  </p>
+                </div>
+
+                {/* Benefícios */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-start gap-3 p-3 bg-[#F7F7F7] rounded-xl">
+                    <div className="text-2xl">✅</div>
+                    <div>
+                      <h3 className="font-bold text-[#3C3C3C] mb-1 text-sm">Análise Personalizada</h3>
+                      <p className="text-[#777777] text-sm">
+                        Identifique seus pontos fortes em desenvolvimento web, mobile, backend e mais
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-3 bg-[#F7F7F7] rounded-xl">
+                    <div className="text-2xl">💼</div>
+                    <div>
+                      <h3 className="font-bold text-[#3C3C3C] mb-1 text-sm">Vagas com Salários Transparentes</h3>
+                      <p className="text-[#777777] text-sm">
+                        Veja oportunidades reais com informações claras sobre remuneração e benefícios
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 p-3 bg-[#F7F7F7] rounded-xl">
+                    <div className="text-2xl">⚡</div>
+                    <div>
+                      <h3 className="font-bold text-[#3C3C3C] mb-1 text-sm">Rápido e Prático</h3>
+                      <p className="text-[#777777] text-sm">
+                        Apenas 5 questões para descobrir oportunidades compatíveis com seu perfil
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Como Funciona */}
+                <div className="bg-[#E8F5E9] rounded-xl p-5 mb-6">
+                  <h3 className="font-bold text-[#3C3C3C] mb-3 text-base">📋 Como funciona:</h3>
+                  <ol className="space-y-2 text-[#4A4A4A] text-sm">
+                    <li className="flex gap-2">
+                      <span className="font-bold text-[#58CC02] min-w-[20px]">1.</span>
+                      <span>Responda 5 questões sobre suas preferências e habilidades técnicas</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-bold text-[#58CC02] min-w-[20px]">2.</span>
+                      <span>Receba uma análise detalhada do seu perfil de desenvolvedor</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="font-bold text-[#58CC02] min-w-[20px]">3.</span>
+                      <span>Explore vagas personalizadas de acordo com suas competências</span>
+                    </li>
+                  </ol>
+                </div>
+
+                {/* CTA Button */}
+                <Button
+                  onClick={() => setShowInitialReward(true)}
+                  className="w-full"
+                  size="lg"
+                >
+                  COMEÇAR QUIZ AGORA
+                </Button>
+
+                {/* Info adicional */}
+                <p className="text-center text-xs text-[#AFAFAF] mt-4">
+                  ⏱️ Tempo estimado: 2-3 minutos | 🔒 Seus dados são privados
+                </p>
+              </motion.div>
+
+              {/* Coluna Direita - Banner de Anúncio */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="hidden lg:block sticky top-8"
+              >
+                <div className="bg-white rounded-2xl p-4 shadow-xl border-2 border-[#E5E5E5]">
+                  <p className="text-xs text-[#AFAFAF] text-center mb-2">Publicidade</p>
+                  <ins
+                    className="adsbygoogle"
+                    style={{ 
+                      display: 'block',
+                      minHeight: '600px'
+                    }}
+                    data-ad-client="ca-pub-5795702444937299"
+                    data-ad-slot="3390069372"
+                    data-ad-format="vertical"
+                    data-full-width-responsive="false"
+                  />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
         <RewardAd
           show={showInitialReward}
           onComplete={handleInitialRewardComplete}
