@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import JobCard from '@/components/JobCard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
-export default function ResultadosPage() {
+function ResultadosContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get('sessionId');
@@ -289,5 +289,20 @@ export default function ResultadosPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function ResultadosPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#58CC02] mx-auto mb-4" />
+          <p className="text-[#777777] text-lg font-bold">Analisando suas respostas...</p>
+        </div>
+      </div>
+    }>
+      <ResultadosContent />
+    </Suspense>
   );
 }
