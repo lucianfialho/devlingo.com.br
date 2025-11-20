@@ -66,6 +66,15 @@ export default function AdSenseRewardAd({
   }, [show]);
 
   const handleStartWatching = () => {
+    // Enviar evento para Google Analytics
+    if (typeof window !== 'undefined' && window.dataLayer) {
+      window.dataLayer.push({
+        event: 'view_reward',
+        ad_slot: adSlot,
+        button_text: buttonText
+      });
+    }
+    
     setIsWatching(true);
   };
 
