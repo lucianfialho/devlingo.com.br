@@ -6,11 +6,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:test": "tsx scripts/test-db-connection.js",
+    "db:inspect": "tsx scripts/inspect-redis-sample.ts",
+    "db:migrate": "tsx scripts/migrate-redis-to-postgres.js",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "test:agent": "tsx scripts/test-agent.ts",
+    "generate:top100": "tsx scripts/generate-top-terms.ts 100 3",
+    "generate:top500": "tsx scripts/generate-top-terms.ts 500 3",
+    "generate:top1000": "tsx scripts/generate-top-terms.ts 1000 3",
+    "generate:custom": "tsx scripts/generate-custom-terms.ts",
+    "regenerate": "tsx scripts/regenerate-terms.ts",
+    "batch:generate": "tsx scripts/generate-batch-404-terms.ts",
+    "batch:check": "tsx scripts/batch-check-status.ts",
+    "batch:download": "tsx scripts/batch-download-results.ts",
+    "batch:process": "tsx scripts/batch-process-results.ts"
   },
   "dependencies": {
     "@firebase/firestore": "^4.4.2",
     "@heroicons/react": "^2.1.1",
+    "@openai/agents": "^0.3.3",
     "@radix-ui/react-progress": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-email/components": "^1.0.0",
@@ -18,6 +34,8 @@
     "@react-spring/web": "^9.7.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
     "firebase-admin": "^12.0.0",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.475.0",
@@ -25,19 +43,23 @@
     "next": "^15.5.6",
     "node-cache": "^5.1.2",
     "openai": "^4.85.4",
+    "postgres": "^3.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.0.0",
     "redis": "^4.7.0",
     "resend": "^3.2.0",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
+    "drizzle-kit": "^0.31.7",
     "eslint": "^8",
     "eslint-config-next": "15.1.7",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0"
+    "tailwindcss": "^3.3.0",
+    "tsx": "^4.20.6"
   }
 }
