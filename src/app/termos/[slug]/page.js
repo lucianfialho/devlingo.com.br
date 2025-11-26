@@ -7,6 +7,8 @@ import {
     CardFooter,
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
+import { resolveTermAlias } from "@/lib/termAliases";
+import { getTerm } from "@/lib/services/termsService";
 
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -343,9 +345,20 @@ const slugData = {
 };
 
 const fetchData = async (slug) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/term/${slug}`);
-  const data = await response.json();
-  return data;
+  // Decode URL-encoded characters (ex: c%2B%2B → c++)
+  const decodedSlug = decodeURIComponent(slug);
+
+  // Resolver aliases (ex: c-- → c++)
+  const resolvedSlug = resolveTermAlias(decodedSlug);
+
+  // Usar service layer diretamente (melhor performance no SSR)
+  const result = await getTerm(resolvedSlug);
+
+  if (!result.success || !result.term) {
+    return { term: null };
+  }
+
+  return { term: result.term };
 };
 
 const fetchCategoryData = async (category) => {
