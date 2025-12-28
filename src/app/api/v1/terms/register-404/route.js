@@ -97,7 +97,12 @@ export const POST = async (req) => {
   } catch (error) {
     console.error("❌ Erro ao registrar termo 404:", error);
     return NextResponse.json(
-      { success: false, error: "Erro ao registrar termo" },
+      {
+        success: false,
+        error: "Erro ao registrar termo",
+        details: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     );
   }
