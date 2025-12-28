@@ -57,10 +57,11 @@ export async function GET(request) {
         const fs = await import('fs');
         const path = await import('path');
 
-        const outputFile = await client.files.content(batch.output_file_id);
+        const outputFileResponse = await client.files.content(batch.output_file_id);
+        const outputFileText = await outputFileResponse.text();
         const tempFileName = `/tmp/batch-results-${batch.id}.jsonl`;
 
-        fs.writeFileSync(tempFileName, outputFile);
+        fs.writeFileSync(tempFileName, outputFileText);
 
         // Processar cada linha do JSONL
         const lines = fs.readFileSync(tempFileName, 'utf-8').split('\n').filter(Boolean);
