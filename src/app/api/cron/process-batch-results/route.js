@@ -27,9 +27,10 @@ export async function GET(request) {
 
     console.log('🔄 Verificando status de batches...');
 
-    const { default: Maritalk } = await import('maritalk');
-    const client = new Maritalk({
-      apiKey: process.env.MARITACA_API_KEY
+    const { default: OpenAI } = await import('openai');
+    const client = new OpenAI({
+      apiKey: process.env.MARITACA_API_KEY,
+      baseURL: 'https://chat.maritaca.ai/api'
     });
 
     // Listar batches ativos

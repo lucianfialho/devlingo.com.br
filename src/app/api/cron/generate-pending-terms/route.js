@@ -126,10 +126,11 @@ async function fetchStackOverflowData(term) {
  * Cria batch job na Maritaca AI com PROMPT PREMIUM + RAG
  */
 async function createMaritacaBatchJobPremium(slugs) {
-  const { default: Maritalk } = await import('maritalk');
+  const { default: OpenAI } = await import('openai');
 
-  const client = new Maritalk({
-    apiKey: process.env.MARITACA_API_KEY
+  const client = new OpenAI({
+    apiKey: process.env.MARITACA_API_KEY,
+    baseURL: 'https://chat.maritaca.ai/api'
   });
 
   console.log('🔍 Buscando dados do Stack Overflow para enriquecer conteúdo...');
