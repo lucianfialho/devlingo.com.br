@@ -14,13 +14,15 @@ if (!process.env.DATABASE_URL) {
 
 // Create PostgreSQL connection
 const connectionString = process.env.DATABASE_URL;
+
+// Configuração otimizada para Vercel (serverless)
+const isProduction = process.env.NODE_ENV === 'production';
 const client = postgres(connectionString, {
   prepare: false,
-  max: 10, // Connection pool size
+  max: isProduction ? 1 : 10, // Serverless: 1 conexão por função
   ssl: 'require', // Supabase requires SSL
-  connection: {
-    application_name: 'devlingo-nextjs'
-  }
+  idle_timeout: 20, // Fechar conexões idle após 20s (em segundos)
+  max_lifetime: 60 * 30, // Recriar conexões após 30min (em segundos)
 });
 
 // Create Drizzle instance
