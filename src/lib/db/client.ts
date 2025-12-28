@@ -17,6 +17,10 @@ const connectionString = process.env.DATABASE_URL;
 const client = postgres(connectionString, {
   prepare: false,
   max: 10, // Connection pool size
+  ssl: 'require', // Supabase requires SSL
+  connection: {
+    application_name: 'devlingo-nextjs'
+  }
 });
 
 // Create Drizzle instance
