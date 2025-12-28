@@ -42,7 +42,7 @@ export default function TermNotFound() {
                   Termo não encontrado
                 </CardTitle>
                 <CardDescription className="text-lg mt-2">
-                  O termo "{slug?.replace(/-/g, ' ')}" ainda não existe no DevLingo
+                  O termo &quot;{slug?.replace(/-/g, ' ')}&quot; ainda não existe no DevLingo
                 </CardDescription>
               </div>
             </div>
