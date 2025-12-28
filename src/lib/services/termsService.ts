@@ -49,14 +49,10 @@ export async function getTerm(slug: string): Promise<{ success: boolean; term?: 
       return { success: true, term: formatTermForAPI(dbTerm), source: 'postgres' };
     }
 
-    // 3. Gerar conteúdo dinamicamente (fallback)
-    console.log(`🤖 Termo '${cleanSlug}' não encontrado. Gerando conteúdo...`);
-    const generated = await generateAndSaveTerm(cleanSlug);
-
-    if (generated) {
-      return { success: true, term: generated, source: 'generated' };
-    }
-
+    // 3. Termo não encontrado - retornar false para acionar página 404
+    // A página 404 vai registrar o termo como "pending" para geração via cron
+    // (não gerar em tempo real para evitar timeout e usar batch com 50% desconto)
+    console.log(`ℹ️ Termo '${cleanSlug}' não encontrado - será gerado via cron às 22h`);
     return { success: false };
 
   } catch (error) {
