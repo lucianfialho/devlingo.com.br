@@ -60,11 +60,11 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Link href={`/termos/${wordOfTheDay.name}`}>
+              <Link href={`/termos/${wordOfTheDay.slug}`}>
                 <SpotlightCard className="custom-spotlight-card flex gap-6 items-center justify-center" spotlightColor="rgba(0, 229, 255, 0.2)">
-                  
+
                   <span className="text-white text-base">Palavra do dia:</span>
-                  <h2 className="text-white text-4xl">{wordOfTheDay.name.replaceAll("-", " ")}</h2>
+                  <h2 className="text-white text-4xl">{wordOfTheDay.slug.replaceAll("-", " ")}</h2>
                 </SpotlightCard>
               </Link>
             </motion.div>
@@ -78,15 +78,15 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {words.map((word, index) => (
             <motion.div
-              key={word.name}
+              key={word.slug}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
               <Card className="shadow-md hover:scale-105 transition-transform">
                 <CardContent className="text-center py-6 text-lg font-bold">
-                  <Link href={`/termos/${word.name}`} className="hover:underline">
-                    {word.name.replaceAll("-", " ")}
+                  <Link href={`/termos/${word.slug}`} className="hover:underline">
+                    {word.slug.replaceAll("-", " ")}
                   </Link>
                 </CardContent>
               </Card>
